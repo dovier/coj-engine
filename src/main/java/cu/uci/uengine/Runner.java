@@ -1,11 +1,13 @@
 package cu.uci.uengine;
 
+import cu.uci.uengine.model.SubmissionJudge;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 
@@ -15,33 +17,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
-import cu.uci.uengine.model.SubmissionJudge;
-import java.util.Properties;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Component
 public class Runner {
 
 	static Log log = LogFactory.getLog(Runner.class.getName());
-	private int RESULT = 0;
-	private int USER_TIME = 1;
-	private int CPU_TIME = 2;
-	private int MEMORY = 3;
 
 	@Resource
 	private FileFilter inDataFilter;
-        
-        @Autowired
+	@Resource
 	private Properties properties;
 
-	public SubmissionJudge run(SubmissionJudge submit, long outputLimit, long maxMemoryLimit,
-			int timeMultiplier, int memoryMultiplier,
+	public SubmissionJudge run(SubmissionJudge submit, long outputLimit,
+			long maxMemoryLimit, int timeMultiplier, int memoryMultiplier,
 			File problemDir, File intDir) {
 
 		String command = submit.getLanguage().getExecCmd();
 		command = command.replace("<EXE>", submit.getExecFile().getName());
-		command = command.replace("<EXEDIR>", submit.getTmpDirSid().getAbsolutePath());
-		command = command.replace("<EXEPATH>", submit.getExecFile().getAbsolutePath());
+		command = command.replace("<EXEDIR>", submit.getTmpDirSid()
+				.getAbsolutePath());
+		command = command.replace("<EXEPATH>", submit.getExecFile()
+				.getAbsolutePath());
 
 		File[] inDataFiles = problemDir.listFiles(inDataFilter);
 		boolean finished = false;
@@ -65,8 +61,13 @@ public class Runner {
 			File intFile = new File(intDir, String.valueOf(submit.getSid()));
 
 			List<String> uengineArgs = new ArrayList<>();
+			/*
+			 * uengineArgs.add("schroot"); uengineArgs.add("-c");
+			 * uengineArgs.add("trusty_i386");
+			 */
 			uengineArgs.add(properties.getProperty("python.path"));
 			uengineArgs.add(properties.getProperty("uengine.script"));
+                        
 			uengineArgs.add(String.valueOf(submit.getCaseTimeLimit()
 					* timeMultiplier));
 			uengineArgs.add(String.valueOf(Math.min(submit.getMemoryLimit()
@@ -78,80 +79,64 @@ public class Runner {
 			uengineArgs.addAll(Arrays.asList(command.split(" ")));
 			ProcessBuilder pb = new ProcessBuilder(
 					uengineArgs.toArray(new String[0]));
-
-			Process process;
+			// System.out.println(uengineArgs);
 			try {
-				process = pb.start();
-				// String error = IOUtils.toString(process.getErrorStream());
-				process.waitFor();
-				if (process.exitValue() != 0) {
-					submit.setErrMsg(FileUtils.readFileToString(errFile));
-					submit.setVerdict(Verdicts.SIE);
-				} else {
-					// result,usertime,cputime,memory
-					String[] results = IOUtils.toString(
-							process.getInputStream()).split(",");
+				Process process = pb.start();
+				String[] results = execute(submit, errFile, process,
+						submit.getLanguage().getRetries());
 
-					// el resultado OK significa que no dio problema ejecutar
-					// con libsandbox. Los demas resultados son errores internos
-					// o resultados que no precisan que se siga ejecutando (TLE,
-					// MLE, etc.)
-					// En OK se debe seguir con el proximo juego de datos, los
-					// demas resultados ya detienen la ejecucion.
-					finished = !"OK".equals(results[RESULT]);
-					switch (results[RESULT]) {
-					case "OK":
-						totalUserTime += Integer.valueOf(results[USER_TIME]);
-						minUserTime = Math.min(minUserTime,
-								Integer.valueOf(results[USER_TIME]));
-						maxUserTime = Math.max(maxUserTime,
-								Integer.valueOf(results[USER_TIME]));
-						totalCPUTime += Integer.valueOf(results[CPU_TIME]);
-						// nos quedamos con la mayor memoria utilizada en
-						// los
-						// casos de prueba.
-						memoryUsed = Math.max(Long.valueOf(results[MEMORY]),
-								memoryUsed);
-						break;
-					case "RF":
-						submit.setVerdict(Verdicts.IVF);
-						break;
-					case "RT":
-						submit.setErrMsg(IOUtils.toString(process
-								.getInputStream()) + " " + IOUtils.toString(process
-								.getErrorStream()));
-						submit.setVerdict(Verdicts.RTE);
-						break;
-					case "TL":
-						submit.setVerdict(Verdicts.TLE);
-						break;
-					case "ML":
-						submit.setVerdict(Verdicts.MLE);
-						break;
-					case "OL":
-						submit.setVerdict(Verdicts.OLE);
-						break;
-					case "PD":
-						submit.setErrMsg("UEngine: Pending:\n"
-								+ FileUtils.readFileToString(errFile));
-						submit.setVerdict(Verdicts.SIE);
-						break;
-					case "AT":
-						submit.setErrMsg("UEngine: Abnormal Termination:\n"
-								+ FileUtils.readFileToString(errFile));
-						submit.setVerdict(Verdicts.RTE);
-						break;
-					case "IE":
-						submit.setErrMsg("UEngine: Internal Error:\n"
-								+ FileUtils.readFileToString(errFile));
-						submit.setVerdict(Verdicts.SIE);
-						break;
-					case "BP":
-						submit.setErrMsg("UEngine: Bad Policy:\n"
-								+ FileUtils.readFileToString(errFile));
-						submit.setVerdict(Verdicts.SIE);
-						break;
-					}
+				switch (results[Results.RESULT]) {
+				case "OK":
+					totalUserTime += Integer
+							.valueOf(results[Results.USER_TIME]);
+					minUserTime = Math.min(minUserTime,
+							Integer.valueOf(results[Results.USER_TIME]));
+					maxUserTime = Math.max(maxUserTime,
+							Integer.valueOf(results[Results.USER_TIME]));
+					totalCPUTime += Integer.valueOf(results[Results.CPU_TIME]);
+					// nos quedamos con la mayor memoria utilizada en
+					// los
+					// casos de prueba.
+					memoryUsed = Math.max(
+							Long.valueOf(results[Results.MEMORY]), memoryUsed);
+					break;
+				case "RF":
+					submit.setVerdict(Verdicts.IVF);
+					break;
+				case "RT":
+					submit.setErrMsg(IOUtils.toString(process.getInputStream())
+							+ " " + IOUtils.toString(process.getErrorStream()));
+					submit.setVerdict(Verdicts.RTE);
+					break;
+				case "TL":
+					submit.setVerdict(Verdicts.TLE);
+					break;
+				case "ML":
+					submit.setVerdict(Verdicts.MLE);
+					break;
+				case "OL":
+					submit.setVerdict(Verdicts.OLE);
+					break;
+				case "PD":
+					submit.setErrMsg("UEngine: Pending:\n"
+							+ FileUtils.readFileToString(errFile));
+					submit.setVerdict(Verdicts.SIE);
+					break;
+				case "AT":
+					submit.setErrMsg("UEngine: Abnormal Termination:\n"
+							+ FileUtils.readFileToString(errFile));
+					submit.setVerdict(Verdicts.RTE);
+					break;
+				case "IE":
+					submit.setErrMsg("UEngine: Internal Error:\n"
+							+ FileUtils.readFileToString(errFile));
+					submit.setVerdict(Verdicts.SIE);
+					break;
+				case "BP":
+					submit.setErrMsg("UEngine: Bad Policy:\n"
+							+ FileUtils.readFileToString(errFile));
+					submit.setVerdict(Verdicts.SIE);
+					break;
 				}
 
 				// si la salida es mas grande que el limite, entonces OLE.
@@ -175,12 +160,43 @@ public class Runner {
 			idx++;
 		}
 
-		//es posible que el ultimo caso se pase del tiempo total.
-		if (totalUserTime > submit.getTimeLimit())
-		submit.setVerdict(Verdicts.TLE);
-		
-		submit.setResponseValues(totalUserTime, totalCPUTime, memoryUsed,
-				minUserTime, maxUserTime, inDataFiles.length);
+		// es posible que el ultimo caso se pase del tiempo total.
+		if (totalUserTime > submit.getTimeLimit() * timeMultiplier)
+			submit.setVerdict(Verdicts.TLE);
+
+		int a = Integer.parseInt((String) properties.get("time.adjust.a"));
+		int b = Integer.parseInt((String) properties.get("time.adjust.b"));
+		submit.setResponseValues(a * totalUserTime / b, a * totalCPUTime / b,
+				memoryUsed, a * minUserTime / b, a * maxUserTime / b,
+				inDataFiles.length);
 		return submit;
 	}
+
+	public String[] execute(SubmissionJudge submit, File errFile,
+			Process process,int retries) throws InterruptedException, IOException {
+		String[] results = null;
+		int count = 0;
+		do {
+		// String error = IOUtils.toString(process.getErrorStream());
+		process.waitFor();
+		if (process.exitValue() != 0) {
+			submit.setErrMsg(FileUtils.readFileToString(errFile));
+			submit.setVerdict(Verdicts.SIE);
+			return null;
+		} else {
+			// result,usertime,cputime,memory
+			results = IOUtils.toString(process.getInputStream())
+					.split(",");
+
+			// el resultado OK significa que no dio problema ejecutar
+			// con libsandbox. Los demas resultados son errores internos
+			// o resultados que no precisan que se siga ejecutando (TLE,
+			// MLE, etc.)
+			// En OK se debe seguir con el proximo juego de datos, los
+			// demas resultados ya detienen la ejecucion.
+		}
+		}while(count++ < retries && "RT".equals(results[0]));
+		return results;
+	}
+
 }
