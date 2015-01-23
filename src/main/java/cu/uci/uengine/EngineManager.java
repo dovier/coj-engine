@@ -143,6 +143,7 @@ public class EngineManager {
 
     private boolean compile(SubmissionJudge submit, boolean autoFix) throws Exception {
 
+    	
         boolean isCompiled = false, isFixed = false;
 
         try {
