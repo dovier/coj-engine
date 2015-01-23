@@ -1,15 +1,11 @@
 package cu.uci.generator.uengine;
 
-import cu.uci.uengine.model.SubmissionJudge;
-import cu.uci.uengine.Verdicts;
-import cu.uci.uengine.runnable.SubmitRunner;
 import java.io.IOException;
+
 import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
@@ -17,7 +13,12 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
+
+import cu.uci.coj.model.SubmissionJudge;
+import cu.uci.uengine.Verdicts;
+import cu.uci.uengine.runnable.SubmitRunner;
 
 
 @Component

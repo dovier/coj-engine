@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cu.uci.uengine.model.SubmissionJudge;
+import cu.uci.coj.model.SubmissionJudge;
 
 public abstract class ComparatorBase {
 	// estas constantes coinciden con el valor de regreso del comando diff segun

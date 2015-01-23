@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.springframework.stereotype.Component;
 
-import cu.uci.uengine.model.SubmissionJudge;
+import cu.uci.coj.model.SubmissionJudge;
 
 @Component
 public class TextComparator extends ComparatorBase{

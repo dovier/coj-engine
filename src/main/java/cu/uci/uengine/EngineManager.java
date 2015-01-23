@@ -1,9 +1,5 @@
 package cu.uci.uengine;
 
-import cu.uci.uengine.compiler.Compiler;
-import cu.uci.uengine.compiler.exceptions.CompilationException;
-import cu.uci.uengine.compiler.exceptions.ServerInternalException;
-import cu.uci.uengine.compiler.exceptions.UnsupportedLanguageException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -18,11 +14,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cu.uci.uengine.model.SubmissionJudge;
+import cu.uci.coj.model.SubmissionJudge;
+import cu.uci.uengine.compiler.Compiler;
+import cu.uci.uengine.compiler.exceptions.CompilationException;
+import cu.uci.uengine.compiler.exceptions.ServerInternalException;
 import cu.uci.uengine.runnable.SubmitRunner;
 import cu.uci.uengine.utils.Utils;
-import static cu.uci.uengine.utils.Utils.dos2unixFileFixer;
-import static cu.uci.uengine.utils.Utils.saveSourceFile;
 
 @Component
 public class EngineManager {

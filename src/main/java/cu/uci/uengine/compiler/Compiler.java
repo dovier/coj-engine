@@ -21,8 +21,8 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author lan Precondition: There have to be a file /languages.properties with
  * a coma separated list of languages with key language.list and a key
- * {lang}.compile_cmd with the compilation command. Example:
- * C++.compile_cmd=/usr/bin/g++ -g -O2 -static-libstdc++ <SRC> -o <EXE>
+ * {lang}.compile with the compilation command. Example:
+ * C++.compile=/usr/bin/g++ -g -O2 -static-libstdc++ <SRC> -o <EXE>
  */
 @Component
 public class Compiler {
@@ -47,13 +47,11 @@ public class Compiler {
 
             language = languageNameProcessor(language);
 
-            String compileCmd = langProps.getProperty(language + ".compile_cmd");
+            String compileCmd = langProps.getProperty(language + ".compile");
 
             if (!StringUtils.isEmpty(compileCmd.trim())) {
                 commands.put(language, compileCmd);
-            } else {
-                log.error("Incorrect language compile_cmd definition.");
-            }
+            } 
         }
 
     }

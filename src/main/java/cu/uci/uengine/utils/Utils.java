@@ -3,19 +3,17 @@ package cu.uci.uengine.utils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
-import cu.uci.uengine.model.SubmissionJudge;
-import cu.uci.uengine.Language;
-import cu.uci.uengine.Verdicts;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
+
+import cu.uci.coj.model.SubmissionJudge;
+import cu.uci.uengine.Language;
 
 @Component
 public class Utils {
@@ -194,8 +192,8 @@ public class Utils {
             Language l = new Language();
             l.setName(lang.trim());
             l.setExt(langProps.getProperty(lang.trim() + ".ext"));
-            l.setCompileCmd(langProps.getProperty(lang.trim() + ".compile_cmd"));
-            l.setExecCmd(langProps.getProperty(lang.trim() + ".exec_cmd"));
+            l.setCompileCmd(langProps.getProperty(lang.trim() + ".compile"));
+            l.setExecCmd(langProps.getProperty(lang.trim() + ".exec"));
             l.setTimeMultiplier(Integer.valueOf(langProps.getProperty(lang
                     .trim() + ".time_mult")));
             l.setRetries(Integer.valueOf(langProps.getProperty(lang

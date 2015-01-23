@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cu.uci.uengine.model.SubmissionJudge;
+import cu.uci.coj.model.SubmissionJudge;
 
 @Component
 public class SpecialJudgeComparator extends ComparatorBase {

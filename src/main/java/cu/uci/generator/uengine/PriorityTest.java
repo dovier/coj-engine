@@ -1,29 +1,26 @@
 package cu.uci.generator.uengine;
 
-import static cu.uci.generator.uengine.SubmissionGenerator.log;
-import cu.uci.uengine.Verdicts;
-import cu.uci.uengine.model.SubmissionJudge;
-import cu.uci.uengine.runnable.SubmitRunner;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpAdmin;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
-import sun.org.mozilla.javascript.ast.ForInLoop;
+
+import cu.uci.coj.model.SubmissionJudge;
+import cu.uci.uengine.runnable.SubmitRunner;
 
 @Component
 public class PriorityTest implements MessageListener {

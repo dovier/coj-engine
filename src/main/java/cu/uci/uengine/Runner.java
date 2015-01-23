@@ -1,6 +1,5 @@
 package cu.uci.uengine;
 
-import cu.uci.uengine.model.SubmissionJudge;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -16,6 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
+
+import cu.uci.coj.model.SubmissionJudge;
 
 
 @Component
