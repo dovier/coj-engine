@@ -109,7 +109,7 @@ public class Runner {
 					submit.setVerdict(Verdicts.RTE);
 					break;
 				case "TL":
-					submit.setVerdict(Verdicts.TLE);
+					submit.setVerdict(Verdicts.CTLE);
 					break;
 				case "ML":
 					submit.setVerdict(Verdicts.MLE);
@@ -143,7 +143,7 @@ public class Runner {
 				// Esto no se puede chequear por defecto debido a que el
 				// libsandbox administra mas ficheros que no solo la salida,
 				// tambien el de error, y por eso no se puede configurar.
-				if (outFile.length() >= outputLimit) {
+				if (outFile.length() > outputLimit) {
 					submit.setVerdict(Verdicts.OLE);
 					finished = true;
 				}

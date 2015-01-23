@@ -59,17 +59,16 @@ public class EngineManager {
 
     }
 
-            
     public SubmissionJudge call(SubmissionJudge submit) {
 
         try {
-            File problemDir = new File(this.properties.getProperty("problems.dir"),String.valueOf(submit.getPid()));
-            
+            File problemDir = new File(this.properties.getProperty("problems.dir"), String.valueOf(submit.getPid()));
+
             // crear la carpeta de trabajo del envio.
             submit.setTmpDirSid(new File(this.tmpDirFile, String.valueOf(submit
                     .getSid())));
             submit.getTmpDirSid().mkdir();
-            
+
             File langIntDirFile = new File(this.intDirFile, submit.getLang());
 
             if (!langIntDirFile.exists()) {
@@ -84,14 +83,13 @@ public class EngineManager {
             Utils.dos2unixFileFixer(submit.getSourceFile().getAbsolutePath());
 
             submit.createExecFile(filename);
-            
-            compile(submit);
-            
-            submit = generateOutput(submit, problemDir, langIntDirFile);   
-            
+
+            compile(submit, true);
+
+            submit = generateOutput(submit, problemDir, langIntDirFile);
+
             evaluate(submit, problemDir);
-            
-            
+
         } catch (IOException e) {
             submit.setVerdict(Verdicts.SIE);
             submit.setErrMsg(e.getMessage());
@@ -127,42 +125,48 @@ public class EngineManager {
 
     private SubmissionJudge generateOutput(SubmissionJudge submit, File problemDir, File langIntDirFile) throws NumberFormatException {
         if (!StringUtils.isEmpty(submit.getLanguage().getExecCmd())) {
-            
+
             submit = runner.run(submit, Long.valueOf(this.properties
                     .getProperty("output.limit")), Long
-                            .valueOf(this.properties.getProperty("memory.limit")),
+                    .valueOf(this.properties.getProperty("memory.limit")),
                     submit.getLanguage().getTimeMultiplier(), submit
-                            .getLanguage().getMemoryMultiplier(),
+                    .getLanguage().getMemoryMultiplier(),
                     problemDir, langIntDirFile);
         }
         return submit;
     }
-    
+
     private boolean autoFix(SubmissionJudge submit) throws IOException, InterruptedException {
-        switch (submit.getLang()){
+        switch (submit.getLang()) {
             case "Java":
-                return Utils.fixJavaName(submit); 
+                return Utils.fixJavaName(submit);
         }
-        return false;         
+        return false;
     }
 
-    private void compile(SubmissionJudge submit) throws Exception {
+    private boolean compile(SubmissionJudge submit, boolean autoFix) throws Exception {
+
         boolean isCompiled = false, isFixed = false;
-        
+
         try {
             isCompiled = compiler.compile(submit.getLanguage().getName(), submit.getSourceFile().getAbsolutePath(), submit.getExecFile().getAbsolutePath());
-        } catch (ServerInternalException | CompilationException ex) {
+        } catch (ServerInternalException ex) {
             submit.setErrMsg(ex.getMessage());
+            submit.setVerdict(Verdicts.SIE);
+        } catch (CompilationException ex) {
+            submit.setErrMsg(ex.getMessage());
+            submit.setVerdict(Verdicts.CE);
+        }
+
+        if (!isCompiled && autoFix) {
             isFixed = autoFix(submit);
         }
-        
+
         if (isFixed) {
-            isCompiled = compiler.compile(submit.getLanguage().getName(), submit.getSourceFile().getAbsolutePath(), submit.getExecFile().getAbsolutePath());
+            isCompiled = compile(submit, false);
         }
-        
-        if (!isCompiled) {
-            throw new Exception("source code can not be compiled");
-        }        
+
+        return isCompiled;
     }
-    
+
 }

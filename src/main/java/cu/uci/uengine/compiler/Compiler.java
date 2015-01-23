@@ -61,9 +61,9 @@ public class Compiler {
     public boolean compile(String language, String sourceCodePath, String exePath) throws ServerInternalException, CompilationException, UnsupportedLanguageException {
 
         if (!commands.containsKey(language)) {
-            String message = "The language you are requesting to compila isn't available. Configure it first.";
+            String message = "The language you are requesting to compile isn't available. Configure it first.";
             log.error(message);
-            throw new UnsupportedLanguageException("The language you are requesting to compila isn't available. Configure it first.");
+            throw new UnsupportedLanguageException("The language you are requesting to compile isn't available. Configure it first.");
         }
 
         String command = commands.get(language);

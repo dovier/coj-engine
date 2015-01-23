@@ -35,7 +35,7 @@ public class Utils {
 
     public static boolean fixJavaName(SubmissionJudge submit) throws IOException,
             InterruptedException {
-            // Si es error de compilacion y es Java, es posible que el error se
+        // Si es error de compilacion y es Java, es posible que el error se
         // deba
         // a un fallo de compilacion porque el nombre de la clase no
         // corresponde
@@ -48,7 +48,7 @@ public class Utils {
         if (idx != -1) {
             err = err.substring(0, idx);
             String[] words = err.split(" ");
-                    // el nombre que debe tener el archivo fuente para que javac
+            // el nombre que debe tener el archivo fuente para que javac
             // pueda compilarlo
             String filename = words[words.length - 1];
             submit.createSourceFile(filename);
@@ -59,9 +59,9 @@ public class Utils {
 
             return true;
 
-        } 
-        
-            return false;
+        }
+
+        return false;
     }
 
     public static void saveSourceFile(File file, String content) throws IOException,
@@ -125,6 +125,10 @@ public class Utils {
             case SIE:
                 submit.setStatus("Internal Error");
                 break;
+            case CTLE:
+                //TODO: @Lan modified UEngine clients to manage this new status
+                submit.setStatus("Case Time Limit Exceeded");
+                break;
             default:
                 break;
         }
@@ -166,6 +170,9 @@ public class Utils {
             case "Invalid Function":
                 key = "ivf";
                 break;
+            case "Case Time Limit Exceeded":
+                key = "ctle";
+                break;
         }
         return key;
     }
@@ -192,8 +199,8 @@ public class Utils {
             l.setTimeMultiplier(Integer.valueOf(langProps.getProperty(lang
                     .trim() + ".time_mult")));
             l.setRetries(Integer.valueOf(langProps.getProperty(lang
-					.trim() + ".retries")));
-            
+                    .trim() + ".retries")));
+
             l.setMemoryMultiplier(Integer.valueOf(langProps.getProperty(lang
                     .trim() + ".memory_mult")));
             languages.put(l.getName(), l);
