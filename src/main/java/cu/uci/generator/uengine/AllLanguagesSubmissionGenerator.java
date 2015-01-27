@@ -37,19 +37,18 @@ public class AllLanguagesSubmissionGenerator {
 
         Queue submitQueue = (Queue) context.getBean("submits");
 
-        boolean[] test = {true,//C
-            true,//Ruby
-            true,//Pascal
-            true,//C++
+        boolean[] test = {false,//C
+            false,//Ruby
+            false,//Pascal
+            false,//C++
             true,//Java
-            true,//C#
-            true,//Bash
-            true,//C++11
-            true,//Perl
-            true,//PHP
-            true};//Python
-        
-        
+            false,//C#
+            false,//Bash
+            false,//C++11
+            false,//Perl
+            false,//PHP
+            false,//Python
+            false};//Prolog
 
         String[] languages = {"C",
             "Ruby",
@@ -61,8 +60,9 @@ public class AllLanguagesSubmissionGenerator {
             "C++11",
             "Perl",
             "PHP",
-            "Python"};
-        
+            "Python",
+            "Prolog"};
+
         final int[] priorities = {1,//C
             1,//Ruby
             1,//Pascal
@@ -73,7 +73,9 @@ public class AllLanguagesSubmissionGenerator {
             1,//C++11
             5,//Perl
             7,//PHP
-            4};//Python
+            4,//Python
+            4};//Prolog
+
         
         String[] sources = {"#include <stdio.h>\nint main(){\nint a,b;\nscanf(\"%d %d\",&a,&b);\nprintf(\"%d\",a+b);\nreturn 0;\n}",
             "a_string = gets\r\na_arr = a_string.split(\" \")\r\na_sum = Integer(a_arr[0]) + Integer(a_arr[1])\r\nprint(\"#{a_sum}\\n\")",
@@ -85,7 +87,8 @@ public class AllLanguagesSubmissionGenerator {
             "#include <iostream>\r\n\r\nusing namespace std;\r\n\r\nint main() {\r\n    int a, b;\r\n    cin >> a >> b;\r\n    cout << a + b;\r\n    return 0;\r\n}",
             "$in = <STDIN>;\r\nchomp($in);\r\n\r\nwhile ($in) {\r\n\t($a, $b) = split(\" \", $in);\r\n\tprint $a + $b, \"\\n\";\r\n\t$in = <STDIN>;\r\n\tchomp($in);\r\n}",
             "<?php\r\n$stdin = fopen('php://stdin', 'r');\r\n$input = fgets($stdin, 10);\r\nlist($a,$b) = split(\" \",$input);\r\necho $a + $b,\"\\n\";\r\nfclose($stdin);\r\n?>",
-            "import string\r\nvalues = raw_input()\r\ntry:\r\n    while values:\r\n        values = string.split(values,\" \")\r\n        print int(values[0])+int(values[1])\r\n        values = raw_input()\r\nexcept EOFError:\r\n    exit"
+            "import string\r\nvalues = raw_input()\r\ntry:\r\n    while values:\r\n        values = string.split(values,\" \")\r\n        print int(values[0])+int(values[1])\r\n        values = raw_input()\r\nexcept EOFError:\r\n    exit",
+            "program:-read_number(A),read_number(B),C is A+B,write(C)."
         };
 
         SubmissionJudge submission = new SubmissionJudge();
@@ -106,29 +109,32 @@ public class AllLanguagesSubmissionGenerator {
         submission.setAvgTimeUsed(0);
         submission.setAccepted(false);
 
-        for (int i = 0; i < languages.length; i++) {
-            if (!test[i]) {
-                continue;
-            }
-            final int index = i;
-
-            submission.setSid(submission.getSid() + 1);
-            submission.setLang(languages[i]);
-            submission.setSource(sources[i]);
-
-            template.convertAndSend(submitQueue.getName(), submission, new MessagePostProcessor() {
-
-                @Override
-                public Message postProcessMessage(Message message) throws AmqpException {
-                    message.getMessageProperties().setPriority(priorities[index]);
-                    return message;
+        while (true) {
+            for (int i = 0; i < languages.length; i++) {
+                if (!test[i]) {
+                    continue;
                 }
-            });
+                final int index = i;
 
-            System.out.println(String.format("Problem %s sample solution with id %s sent in language %s.", submission.getPid(), submission.getSid(), languages[i]));
+                submission.setSid(submission.getSid() + 1);
+                submission.setLang(languages[i]);
+                submission.setSource(sources[i]);
+
+                template.convertAndSend(submitQueue.getName(), submission, new MessagePostProcessor() {
+
+                    @Override
+                    public Message postProcessMessage(Message message) throws AmqpException {
+                        message.getMessageProperties().setPriority(priorities[index]);
+                        return message;
+                    }
+                });
+
+                System.out.println(String.format("Problem %s sample solution with id %s sent in language %s.", submission.getPid(), submission.getSid(), languages[i]));
+            }
+
+            System.out.println("All languages sent.");
+            System.in.read();
         }
-
-        System.out.println("All languages sent.");
         //context.getBean(CachingConnectionFactory.class).destroy();
     }
 

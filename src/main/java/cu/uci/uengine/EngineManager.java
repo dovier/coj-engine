@@ -81,11 +81,11 @@ public class EngineManager {
 
             submit.createExecFile(filename);
 
-            compile(submit, true);
-
-            submit = generateOutput(submit, problemDir, langIntDirFile);
-
-            evaluate(submit, problemDir);
+            //@Lan: If compiler isn't available it should be a interpreted language
+           if (!compiler.isCompilerAvailable(submit.getLanguage().getName()) || compile(submit, true)){
+               generateOutput(submit, problemDir, langIntDirFile);
+               evaluate(submit, problemDir);
+           }
 
         } catch (IOException e) {
             submit.setVerdict(Verdicts.SIE);
@@ -120,7 +120,7 @@ public class EngineManager {
         }
     }
 
-    private SubmissionJudge generateOutput(SubmissionJudge submit, File problemDir, File langIntDirFile) throws NumberFormatException {
+    private SubmissionJudge generateOutput(SubmissionJudge submit, File problemDir, File langIntDirFile) throws NumberFormatException, IOException {
         if (!StringUtils.isEmpty(submit.getLanguage().getExecCmd())) {
 
             submit = runner.run(submit, Long.valueOf(this.properties
@@ -157,10 +157,11 @@ public class EngineManager {
         }
 
         if (!isCompiled && autoFix) {
-            isFixed = autoFix(submit);
+            isFixed = autoFix(submit);            
         }
 
         if (isFixed) {
+            submit.setVerdict(null);
             isCompiled = compile(submit, false);
         }
 
