@@ -1,45 +1,57 @@
-README
-======
+[COJ](http://coj.uci.cu/) - Caribbean Online Judge
+==================================================
 
-What is Symfony?
------------------
+El Juez en Línea Caribeño tiene un motor de evaluación completamente desacoplado hasta el punto de convertirlo en un componente separado. El proyecto UEngine persigue el perfeccionamiento de este motor con vistas a mejorar las funcionalidades brindadas al Juez en Línea Caribeño.
 
-Symfony is a PHP 5.3 full-stack web framework. It is written with speed and
-flexibility in mind. It allows developers to build better and easy to maintain
-websites with PHP.
+## Manual de Instalación
 
-Symfony can be used to develop all kind of websites, from your personal blog
-to high traffic ones like Dailymotion or Yahoo! Answers.
+Guia de instalacion y configuracion del Uengine
 
-Requirements
-------------
+Introduccion
+Uengine es el motor de evaluacion del Caribbean Online Judge.
 
-Symfony is only supported on PHP 5.3.9 and up.
+Requerimientos
+Uengine esta probado en `Ubuntu 14.04 y 12.04`, tanto server como escritorio, 32 y 64 bits. Uengine usa [libsandbox](https://openjudge.net/Solution/Sandbox) para ejecutar los envios de los usuarios en un ambiente seguro y controlado (un sandbox o jail)
 
-Be warned that PHP 5.3.16 has a major bug in the Reflection subsystem and is 
-not suitable to run Symfony (https://bugs.php.net/bug.php?id=62715)
+Requiere los compiladores de los lenguajes que se quieran adicionar al Juez en Lineah. Actualmente estos son:....uyeap
 
-Installation
-------------
+### Registrar como servicio
 
-The best way to install Symfony is to download the Symfony Standard Edition
-available at [http://symfony.com/download][1].
+    - hacer un fichero en /etc/init.d/uengine con el siguiente texto:
+    #!/bin/bash
 
-Documentation
--------------
+    case $1 in
+    start)
+    nohup java -jar /opt/chjudgeEngine.jar & echo $! > /var/run/chjudge.pid
+    msg=`cat /var/run/chjudge.pid`
+    echo "starting engine with pid ${msg}"
 
-The "[Quick Tour][2]" tutorial gives you a first feeling of the framework. If,
-like us, you think that Symfony can help speed up your development and take
-the quality of your work to the next level, read the official
-[Symfony documentation][3].
+    ;;
+    stop)
+    kill -9 `cat /var/run/chjudge.pid`
+    rm /var/run/chjudge.pid
+    ;;
+    restart)
+    echo "stoping engine"
+    /etc/init.d/chjudgeengine stop
+    sleep 1
+    /etc/init.d/chjudgeengine start
+    ;;
+    ?)
+    echo 'invalid parameter';
+    ;;
+    esac
 
-Contributing
-------------
+### Configuraciones extras
 
-Symfony is an open source, community-driven project. If you'd like to contribute,
-please read the [Contributing Code][4] part of the documentation. If you're submitting
-a pull request, please follow the guidelines in the [Submitting a Patch][5] section
-and use [Pull Request Template][6].
+* Recordar configurar el LibSandbox
+* También configurar los properties según el entorno
 
-Running Symfony Tests
-----------------------
+
+### Compruebe los compiladores. ej:
+
+	/usr/bin/gcc
+
+## Contáctenos
+
+Preguntas o comentarios a través del mecanismo establecido en el Juez en Línea Caribeño, [Contáctenos](http://coj.uci.cu/general/contact.xhtml)
