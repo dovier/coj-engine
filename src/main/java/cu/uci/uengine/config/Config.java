@@ -46,6 +46,18 @@ public class Config implements AsyncConfigurer {
         };
         return bean;
     }
+    
+    @Bean
+    public FileFilter outDataFilter() {
+        FileFilter bean = new FileFilter() {
+
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().endsWith(".out");
+            }
+        };
+        return bean;
+    }
 
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
