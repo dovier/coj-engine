@@ -113,7 +113,7 @@ public class Config implements AsyncConfigurer {
         bean.setMessageConverter(jsonMessageConverter());
 		// para enviar, el binding del exchange se configura en el rabbitmq
         // server a la cola correspondiente (que aqui no interesa)
-        bean.setExchange(properties.getProperty("rabbit.exchange"));
+        bean.setExchange(properties.getProperty("rabbit.exchange.response"));
         return bean;
     }
 
