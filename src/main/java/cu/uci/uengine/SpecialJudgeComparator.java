@@ -41,9 +41,9 @@ public class SpecialJudgeComparator extends ComparatorBase {
         // entrada
         cmd = cmd.replaceAll("<1>", problemInFile.getAbsolutePath());
         // solucion correcta
-        cmd = cmd.replaceAll("<2>", tmpOutFile.getAbsolutePath());
+        cmd = cmd.replaceAll("<2>", problemOutFile.getAbsolutePath());
         // solucion del usuario
-        cmd = cmd.replaceAll("<3>", problemOutFile.getAbsolutePath());
+        cmd = cmd.replaceAll("<3>",tmpOutFile.getAbsolutePath() );
 
         String[] strings = cmd.trim().split(" ");
         ProcessBuilder pb = new ProcessBuilder(strings);
