@@ -2,6 +2,8 @@ package cu.uci.generator.uengine;
 
 import cu.uci.generator.uengine.SubmissionGenerator;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Resource;
 import org.springframework.amqp.core.AmqpAdmin;
 
@@ -80,7 +82,9 @@ public class RabbitMQConfig {
     public Queue responses() throws IOException {
 
         String queueName = env.getProperty("rabbit.queue.response");
-        Queue queue = new Queue(queueName);
+        Map<String, Object> mapa = new HashMap();
+        mapa.put("x-max-length", 100);
+        Queue queue = new Queue(queueName,true,false,false, mapa);
         amqpAdmin().declareQueue(queue);
 
         return queue;

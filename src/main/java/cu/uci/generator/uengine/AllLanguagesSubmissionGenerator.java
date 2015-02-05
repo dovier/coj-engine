@@ -37,18 +37,18 @@ public class AllLanguagesSubmissionGenerator {
 
         Queue submitQueue = (Queue) context.getBean("submits");
 
-        boolean[] test = {false,//C
-            false,//Ruby
-            false,//Pascal
-            false,//C++
+        boolean[] test = {true,//C
+            true,//Ruby
+            true,//Pascal
+            true,//C++
             true,//Java
-            false,//C#
-            false,//Bash
-            false,//C++11
-            false,//Perl
-            false,//PHP
-            false,//Python
-            false};//Prolog
+            true,//C#
+            true,//Bash
+            true,//C++11
+            true,//Perl
+            true,//PHP
+            true,//Python
+            true};//Prolog
 
         String[] languages = {"C",
             "Ruby",

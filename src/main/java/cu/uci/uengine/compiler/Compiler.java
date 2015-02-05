@@ -13,10 +13,16 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 import cu.uci.uengine.runnable.SubmitRunner;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.accessibility.AccessibleRole;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author lan Precondition: There have to be a file /languages.properties with
@@ -26,6 +32,9 @@ import org.apache.commons.lang.StringUtils;
  */
 @Component
 public class Compiler {
+
+    @Autowired
+    private Properties properties;
 
     static Log log = LogFactory.getLog(Compiler.class.getName());
     private HashMap<String, String> commands;
@@ -75,27 +84,46 @@ public class Compiler {
         command = command.replace("<SRC>", sourceCodePath);
         command = command.replace("<EXE>", exePath);
         command = command.replaceAll("<EXEPATH>", exePath);
-			// esto es importante porque el compilador de C/C++ genera un nombre
+        // esto es importante porque el compilador de C/C++ genera un nombre
         // de ejecutable con espacios en blanco al final
         String[] strings = command.trim().split(" ");
         ProcessBuilder pb = new ProcessBuilder(strings);
         // combina error y output
         pb.redirectErrorStream(true);
 
-        Process process;
         try {
-            process = pb.start();
-            process.waitFor();
-            if (process.exitValue() != 0) {
-                BufferedReader bis = new BufferedReader(
-                        new InputStreamReader(new BufferedInputStream(
-                                        process.getInputStream())));
-                StringBuilder sb = new StringBuilder();
-                String temp = null;
-                while ((temp = bis.readLine()) != null) {
-                    sb.append(temp);
+            final Process process = pb.start();
+
+            //This is because of limit on Compiler Execution Time
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        process.waitFor();
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
                 }
-                throw new CompilationException(sb.toString());
+            });
+
+            thread.start();
+            final long compilationTimeLimit = Long.valueOf(properties.getProperty("compiler.limit.time"));
+            thread.join(compilationTimeLimit);
+
+            try {
+                if (process.exitValue() != 0) {
+                    BufferedReader bis = new BufferedReader(
+                            new InputStreamReader(new BufferedInputStream(
+                                            process.getInputStream())));
+                    StringBuilder sb = new StringBuilder();
+                    String temp = null;
+                    while ((temp = bis.readLine()) != null) {
+                        sb.append(temp);
+                    }
+                    throw new CompilationException(sb.toString());
+                }
+            } catch (IllegalThreadStateException illegalThreadStateException) {//Caused by process.exitValue() if the subprocess represented by this Process object has not yet terminated 
+                throw new CompilationException("Compilation Time Limit Exceeded");
             }
         } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
