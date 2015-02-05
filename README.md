@@ -72,6 +72,8 @@ El archivo de configuración del Evaluador Personalizado debe tener una clave ch
 
 	checker.exec=./checker <1> <3> <2>
 
+En este caso se programó un Evaluador en la misma ruta que su fichero de configuración (con configuración estándar situado en Checker/checker.properties) y que necesita como parámetros: Fichero de entrada, Solución a evaluar, Solución prototipo.
+
 ### Evaluación(Código)
 
 * Accepted(200).
