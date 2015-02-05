@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cu.uci.coj.model.SubmissionJudge;
+import cu.uci.uengine.utils.Utils;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 
 @Component
 public class SpecialJudgeComparator extends ComparatorBase {
@@ -24,7 +27,7 @@ public class SpecialJudgeComparator extends ComparatorBase {
     public boolean diffFile(int idx, File problemDir, File problemInFile,
             File problemOutFile, File tmpOutFile, SubmissionJudge submit)
             throws IOException, InterruptedException {
-        String cmd = properties.get("checker.exec").toString();
+        String cmd = properties.get("checker.config").toString();
         Properties p = new Properties();
         p.load(new FileInputStream(new File(problemDir, cmd)));
         cmd = p.getProperty("checker.exec");
@@ -45,9 +48,16 @@ public class SpecialJudgeComparator extends ComparatorBase {
         String[] strings = cmd.trim().split(" ");
         ProcessBuilder pb = new ProcessBuilder(strings);
         Process process = pb.start();
-
         process.waitFor();
-        submit.setVerdict(process.exitValue() == 0 ? Verdicts.AC : Verdicts.WA);
+
+        if (process.exitValue() != 0) {
+            submit.setVerdict(process.exitValue() == 200?Verdicts.AC:Verdicts.WA);
+        } else {
+            InputStream inputStream = process.getErrorStream();
+            
+            String veredict = Utils.readInputStream(inputStream);
+            submit.setVerdict(veredict.equals("Accepted") ? Verdicts.AC : Verdicts.WA);
+        }
         return false;
     }
 }

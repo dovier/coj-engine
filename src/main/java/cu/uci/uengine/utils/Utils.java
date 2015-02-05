@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import cu.uci.coj.model.SubmissionJudge;
 import cu.uci.uengine.Language;
+import java.io.InputStream;
 
 @Component
 public class Utils {
@@ -204,5 +205,17 @@ public class Utils {
             languages.put(l.getName(), l);
         }
 
+    }
+
+    public static String readInputStream(InputStream inputStream) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        int available;
+        while ((available = inputStream.available()) > 0) {
+            byte[] bytes = new byte[available];
+            inputStream.read(bytes);
+            stringBuilder.append(new String(bytes));
+        }
+
+        return stringBuilder.toString();
     }
 }

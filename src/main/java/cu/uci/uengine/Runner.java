@@ -19,10 +19,6 @@ import org.springframework.stereotype.Component;
 
 import cu.uci.coj.model.SubmissionJudge;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 public class Runner {
@@ -191,6 +187,8 @@ public class Runner {
 		submit.setResponseValues(a * totalUserTime / b, a * totalCPUTime / b,
 				memoryUsed, a * minUserTime / b, a * maxUserTime / b,
 				inDataFiles.length);
+                
+                submit.setFirstWaCase(idx);
 		return submit;
 	}
 
