@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>cu.uci.coj</groupId>
+  <groupId>cu.uci</groupId>
   <artifactId>UEngine</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>UEngine</name>
@@ -29,7 +29,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>cu.uci.uengine.Main</mainClass>
+                            <mainClass>cu.uci.uengine.amqp.SubmitsListener</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>3.1.2.RELEASE</version>
+      <version>3.2.9.RELEASE</version>
       <type>jar</type>
     </dependency>
     <dependency>
@@ -92,4 +92,5 @@
       <type>jar</type>
     </dependency>
   </dependencies>
+    <description>UEngine es un motor de evaluación de códigos fuentes. Permite determinar cuando un código fuentes es capaz de generar, a partir de un grupo de entradas, las salidas correspondientes; en dependencia de las especificaciones del problema resuelto.</description>
 </project>
