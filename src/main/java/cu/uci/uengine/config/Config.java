@@ -90,14 +90,7 @@ public class Config implements AsyncConfigurer {
         return properties;
     }
     
-    @Bean
-    public Properties languagesConfiguration() throws IOException {
-        Properties languagesConfiguration = new Properties();
-        languagesConfiguration.load(ClassLoader
-                .getSystemResourceAsStream("languages.properties"));
-        return languagesConfiguration;
-    }
-    
+
 
     @Override
     public Executor getAsyncExecutor() {

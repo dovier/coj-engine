@@ -5,7 +5,6 @@
  */
 package cu.uci.uengine.adapters;
 
-import com.sun.corba.se.impl.util.JDKBridge;
 import cu.uci.coj.model.SubmissionJudge;
 import cu.uci.uengine.Verdicts;
 import cu.uci.uengine.model.Submission;

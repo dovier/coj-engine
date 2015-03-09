@@ -47,7 +47,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testTextCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("Text can't be compiled", compiler.isCompilerAvailable("Text"), false);
@@ -63,7 +63,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testCCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         String sourceCode = "#include <stdio.h>\nint main(){\nint a,b;\nscanf(\"%d %d\",&a,&b);\nprintf(\"%d\",a+b);\nreturn 0;\n}";
 
         Compilable compilable = new MockCompilable(1, sourceCode, "C", "c", FileUtils.getTempDirectory());
@@ -83,7 +83,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testCCompilationError() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         String sourceCode = "#include <stdio.h>\nit main(){\nint a,b;\nscanf(\"%d %d\",&a,&b);\nprintf(\"%d\",a+b);\nreturn 0;\n}";
 
         Compilable compilable = new MockCompilable(1, sourceCode, "C", "c", FileUtils.getTempDirectory());
@@ -108,7 +108,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testJavaCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         String sourceCode = "import java.util.Scanner;\r\npublic class AmasB {\r\n\r\n    public static void main(String[] args) {\r\n     \r\n     int a,b;\r\n        Scanner numero = new Scanner(System.in);\r\n     \r\n       a = numero.nextInt(); \r\n       b = numero.nextInt()+a;  \r\n\r\n     \r\n        System.out.println( b );\r\n    }\r\n}";
         File sourceFile = new File(FileUtils.writeStringToFile("AmasB.java", FileUtils.getTempDirectory(), sourceCode, false));
 
@@ -129,7 +129,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testJavaCompilationError() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         String sourceCode = "import java.ut.Scanner;\r\npublic class AmasB {\r\n\r\n    public static void main(String[] args) {\r\n     \r\n     int a,b;\r\n        Scanner numero = new Scanner(System.in);\r\n     \r\n       a = numero.nextInt(); \r\n       b = numero.nextInt()+a;  \r\n\r\n     \r\n        System.out.println( b );\r\n    }\r\n}";
         File sourceFile = new File(FileUtils.writeStringToFile("AmasB.java", FileUtils.getTempDirectory(), sourceCode, false));
 
@@ -156,7 +156,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testPerlCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("Perl can't be compiled", compiler.isCompilerAvailable("Perl"), false);
@@ -172,7 +172,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testPythonCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("Python can't be compiled", compiler.isCompilerAvailable("Python"), false);
@@ -188,7 +188,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testRubyCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("Ruby can't be compiled", compiler.isCompilerAvailable("Ruby"), false);
@@ -204,7 +204,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testPHPCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("PHP can't be compiled", compiler.isCompilerAvailable("PHP"), false);
@@ -220,7 +220,7 @@ public class CompilerTest
      * @throws java.io.IOException
      */
     public void testBashCompilation() throws InterruptedException, CompilerException, CompilationException, UnsupportedLanguageException, IOException {
-        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler");
+        AnnotationConfigApplicationContext appCtx = new AnnotationConfigApplicationContext("cu.uci.uengine.compiler","cu.uci.uengine.languages");
         Compiler compiler = appCtx.getBean(Compiler.class);
 
         assertEquals("Bash can't be compiled", compiler.isCompilerAvailable("Bash"), false);
