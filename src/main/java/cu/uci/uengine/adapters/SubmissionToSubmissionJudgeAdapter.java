@@ -43,6 +43,8 @@ public class SubmissionToSubmissionJudgeAdapter extends SubmissionJudge {
         //Pieeee
         SubmissionJudge submissionJudge = ((SubmissionJudgeToSubmissionAdapter)submission).getSubmissionJudge();
         setUid(submissionJudge.getUid());
+        setLanguage(null);
+        
     }
 
     private Integer getFirstFailedDataset(Submission submission) {

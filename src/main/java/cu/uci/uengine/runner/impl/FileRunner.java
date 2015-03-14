@@ -85,14 +85,16 @@ public class FileRunner implements Runner {
         File errFile = new File(runnerContext.getTemporaryDirectory(), name + ".err");
         File intFile = new File(runnerContext.getInstructionDirectory(), String.valueOf(runnable.getId()));
 
-        ProcessBuilder pb = buildProcessBuilder(runnable.getLimits(), runnerContext.getInputFile().getAbsolutePath(), outFile, errFile, intFile, command);
+        ProcessBuilder pb = buildProcessBuilder(runnable.getLimits(), runnable.getLanguageName(), runnerContext.getInputFile().getAbsolutePath(), outFile, errFile, intFile, command, String.valueOf(runnable.getId()));
 
         Process process = pb.start();
 
         process.waitFor();
 
         if (process.exitValue() != 0) {
-            return new RunnerResult(RunnerResult.Result.IE, FileUtils.readFileToString(errFile));
+            byte[] processError = new byte[process.getErrorStream().available()];
+            process.getErrorStream().read(processError);
+            return new RunnerResult(RunnerResult.Result.IE, FileUtils.readFileToString(errFile) + new String(processError));
         }
         // result,usertime,cputime,memory
         String[] results = IOUtils.toString(process.getInputStream())
@@ -114,7 +116,8 @@ public class FileRunner implements Runner {
                 break;
             case "AT":
                 result = new RunnerResult(RunnerResult.Result.RT);
-            break;
+                result.messageConcat(FileUtils.readFileToString(errFile));
+                break;
             case "TL":
                 result = new RunnerResult(RunnerResult.Result.CTL);
                 break;
@@ -140,19 +143,33 @@ public class FileRunner implements Runner {
         return result;
     }
 
-    private ProcessBuilder buildProcessBuilder(Limits limits, String inputPath, File outFile, File errFile, File intFile, String command) {
+    private ProcessBuilder buildProcessBuilder(Limits limits, String language, String inputPath, File outFile, File errFile, File intFile, String command, String id) {
         List<String> uengineArgs = new ArrayList<>();
         uengineArgs.add(properties.getProperty("python.path"));
         uengineArgs.add(properties.getProperty("uengine.script"));
-        uengineArgs.add(String.valueOf(limits.getMaxCaseExecutionTime()));
-        uengineArgs.add(String.valueOf(limits.getMaxMemory()));
-        uengineArgs.add(inputPath);
+
+        uengineArgs.add("--identifier");
+        uengineArgs.add(id);
+        uengineArgs.add("--language");
+        uengineArgs.add(language);
+        uengineArgs.add("--input");
+        uengineArgs.add(inputPath);        
+        uengineArgs.add("--output");
         uengineArgs.add(outFile.getAbsolutePath());
+        uengineArgs.add("--errors");
         uengineArgs.add(errFile.getAbsolutePath());
-        uengineArgs.add(intFile.getAbsolutePath());
+        uengineArgs.add("--time-limit");
+        uengineArgs.add(String.valueOf(limits.getMaxCaseExecutionTime()));
+        uengineArgs.add("--memory-limit");
+        uengineArgs.add(String.valueOf(limits.getMaxMemory()));
+        uengineArgs.add("--gen-int");
+        uengineArgs.add("--program");
         uengineArgs.addAll(Arrays.asList(command.split(" ")));
-        return new ProcessBuilder(
-                uengineArgs.toArray(new String[0]));
+        
+        String[] uengineArgsArray = uengineArgs.toArray(new String[0]);
+        log.info(Arrays.toString(uengineArgsArray));
+
+        return new ProcessBuilder(uengineArgsArray);
     }
 
     @Override

@@ -2,6 +2,8 @@ package cu.uci.generator.uengine;
 
 import cu.uci.generator.uengine.SubmissionGenerator;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Resource;
 import org.springframework.amqp.core.AmqpAdmin;
 

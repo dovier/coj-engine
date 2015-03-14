@@ -1,5 +1,6 @@
 package cu.uci.uengine;
 
+import cu.uci.uengine.amqp.SubmitsListener;
 import cu.uci.uengine.compiler.Compiler;
 import cu.uci.uengine.compiler.exceptions.CompilationException;
 import cu.uci.uengine.compiler.exceptions.CompilerException;
@@ -7,7 +8,6 @@ import cu.uci.uengine.creators.RunnerContextBuilder;
 import cu.uci.uengine.creators.VerdictFactory;
 import cu.uci.uengine.evaluator.Evaluator;
 import cu.uci.uengine.evaluator.EvaluatorResult;
-import cu.uci.uengine.evaluator.exceptions.EvaluationException;
 import cu.uci.uengine.languages.Languages;
 import cu.uci.uengine.model.Submission;
 import cu.uci.uengine.runner.Limits;
@@ -87,7 +87,14 @@ public class Engine {
             submission.setVerdict(Verdicts.SIE);
             submission.setErrorMessage(exception.getMessage());
         } finally {
-            FileUtils.deleteQuietly(submission.getTemporaryDirectory());
+            
+            log.info("Esta es la carpeta temporal "+submission.getTemporaryDirectory().getAbsolutePath());
+            
+             if (submission.getTemporaryDirectory() != null && !SubmitsListener.isDebuguing) {
+                 log.info("BORRADA" );
+                FileUtils.deleteQuietly(submission.getTemporaryDirectory());
+            }
+            
         }
 
         return submission;
@@ -247,7 +254,7 @@ public class Engine {
 
     private void validateInputs(File[] inputs) throws InvalidDataSetsFormatException {
         if (inputs.length == 0) {
-            throw new InvalidDataSetsFormatException("The must be at least one dataset");
+            throw new InvalidDataSetsFormatException("There must be at least one dataset");
         }
     }
 

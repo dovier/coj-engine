@@ -30,7 +30,8 @@ public class SubmissionJudgeToSubmissionAdapter extends Submission {
         this.evaluationType = submissionJudge.isSpecialJudge() ? "SpecialJudge" : "PrototypeOutput";
         this.languageName = submissionJudge.getLang();
         this.sourceCode = submissionJudge.getSource();
-
+        //TODO: @Lan-Hasta que venga el parámetro
+        this.setTrusted(false);
     }
     
     public SubmissionJudge getSubmissionJudge(){

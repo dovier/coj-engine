@@ -52,6 +52,8 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
 
     private Boolean isStopOnError;
 
+    private Boolean trusted;
+    
     //End Input
     protected List<EvaluatorResult> evaluatorResults;
     protected List<RunnerResult> runnerResults;
@@ -436,6 +438,20 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
      */
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    /**
+     * @return the isTrusted
+     */
+    public Boolean isTrusted() {
+        return trusted;
+    }
+
+    /**
+     * @param trusted the isTrusted to set
+     */
+    public void setTrusted(Boolean trusted) {
+        this.trusted = trusted;
     }
 
 }

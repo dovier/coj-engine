@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
+import cu.uci.uengine.Language;
 import cu.uci.uengine.Verdicts;
 
 public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable {
@@ -38,6 +39,7 @@ public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable
 	private int avgTimeUsed;
 
 	// work attributes
+	private Language language;
 	private Verdicts verdict;
 	private File tmpDirSid;
 	private File execFile;
@@ -114,7 +116,10 @@ public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable
 		this.sourceFile = sourceFile;
 	}
 
-
+	public void createSourceFile(String filename) {
+		this.sourceFile = new File(tmpDirSid, filename + "."
+				+ language.getExt());
+	}
 
 	/*
 	 * Esto se usa para decidir entre WA, PE y AC en el Comparator despues de
@@ -155,6 +160,13 @@ public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable
 		return cid == 0;
 	}
 
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
 
 	public Verdicts getVerdict() {
 		return verdict;
