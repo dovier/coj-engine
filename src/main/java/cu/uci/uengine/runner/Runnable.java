@@ -19,5 +19,7 @@ public interface Runnable extends Identifiable {
     public File getRunnableFile();
 
     public Limits getLimits();
+    
+    public boolean isTrusted();
 
 }

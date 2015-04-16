@@ -35,9 +35,9 @@ public class PrototypeOutputEvaluator implements Evaluator {
     private EvaluatorResult fromComparatorResult(TextFileComparator.ComparatorResult comparatorResult) throws EvaluationException {
         switch (comparatorResult) {
             case EQUAL:
-                return new EvaluatorResult(EvaluatorResult.Result.ACCEPTED);
+                return new EvaluatorResult(EvaluatorResult.Result.AC);
             case DIFFERENT:
-                return new EvaluatorResult(EvaluatorResult.Result.WRONG_ANSWER);
+                return new EvaluatorResult(EvaluatorResult.Result.WA);
             case ERROR:
                 throw new EvaluationException("There was an error with the evaluation process.");
         }

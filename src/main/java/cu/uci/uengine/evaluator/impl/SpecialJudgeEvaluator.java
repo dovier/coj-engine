@@ -42,11 +42,11 @@ public class SpecialJudgeEvaluator implements Evaluator {
         process.waitFor();
 
         if (process.exitValue() != 0) {
-            return new EvaluatorResult(process.exitValue() == 200 ? EvaluatorResult.Result.ACCEPTED : EvaluatorResult.Result.WRONG_ANSWER);
+            return new EvaluatorResult(process.exitValue() == 200 ? EvaluatorResult.Result.AC : EvaluatorResult.Result.WA);
         } else {
             InputStream inputStream = process.getErrorStream();
             String veredict = Utils.readInputStream(inputStream);
-            return new EvaluatorResult(veredict.equals("Accepted") ? EvaluatorResult.Result.ACCEPTED : EvaluatorResult.Result.WRONG_ANSWER);
+            return new EvaluatorResult(veredict.equals("Accepted") ? EvaluatorResult.Result.AC : EvaluatorResult.Result.WA);
         }
     }
 }

@@ -31,9 +31,11 @@ public class SubmissionToSubmissionJudgeAdapter extends SubmissionJudge {
         setMinTimeUsed(submission.getMinTimeUsed()==null?0:submission.getMinTimeUsed().intValue());
         setMaxTimeUsed(submission.getMaxTimeUsed()==null?0:submission.getMaxTimeUsed().intValue());
         setAvgTimeUsed(submission.getAverageTimeUsed()==null?0:submission.getAverageTimeUsed().intValue());
-        
+        if (submission.isAllResults()){
+            setEvaluatorResults(submission.getEvaluatorResults());
+        }
         //Extras
-        setCid(submission.getContestId());
+        setCid((int) submission.getMetadata().get("Cid"));
         setLang(submission.getLanguageName());        
         setAccepted(submission.getVerdict()==Verdicts.AC);
         setStatus(submission.getVerdict().associatedMessage());
@@ -43,8 +45,7 @@ public class SubmissionToSubmissionJudgeAdapter extends SubmissionJudge {
         //Pieeee
         SubmissionJudge submissionJudge = ((SubmissionJudgeToSubmissionAdapter)submission).getSubmissionJudge();
         setUid(submissionJudge.getUid());
-        setLanguage(null);
-        
+        setLanguage(null);        
     }
 
     private Integer getFirstFailedDataset(Submission submission) {

@@ -4,6 +4,7 @@ import cu.uci.uengine.amqp.SubmitsListener;
 import cu.uci.uengine.compiler.Compiler;
 import cu.uci.uengine.compiler.exceptions.CompilationException;
 import cu.uci.uengine.compiler.exceptions.CompilerException;
+import cu.uci.uengine.creators.LimitsFactory;
 import cu.uci.uengine.creators.RunnerContextBuilder;
 import cu.uci.uengine.creators.VerdictFactory;
 import cu.uci.uengine.evaluator.Evaluator;
@@ -22,6 +23,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Properties;
 import javax.annotation.Resource;
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +49,9 @@ public class Engine {
 
     @Resource
     protected IOFileFilter outDataFilter;
+
+    @Resource
+    protected Limits engineLimits;
 
     @Resource
     protected Comparator<File> dataSetFileComparator;
@@ -77,8 +82,7 @@ public class Engine {
                 File datasetsDirectory = getDatasetsDirectory(submission);
 
                 if (runner.isRunnable(submission.getLanguageName())) {
-                    File languageInstructionsDirectory = getLanguageInstructionsDirectory(submission);
-                    run(submission, datasetsDirectory, languageInstructionsDirectory);
+                    run(submission, datasetsDirectory);
                 }
 
                 evaluate(submission, datasetsDirectory);
@@ -87,59 +91,48 @@ public class Engine {
             submission.setVerdict(Verdicts.SIE);
             submission.setErrorMessage(exception.getMessage());
         } finally {
-            
-            log.info("Esta es la carpeta temporal "+submission.getTemporaryDirectory().getAbsolutePath());
-            
-             if (submission.getTemporaryDirectory() != null && !SubmitsListener.isDebuguing) {
-                 log.info("BORRADA" );
+            if (submission.getTemporaryDirectory() != null && !SubmitsListener.isDebugging) {
+
                 FileUtils.deleteQuietly(submission.getTemporaryDirectory());
+                log.info(String.format("Temporary Directory (%s) erased.", submission.getTemporaryDirectory().getAbsolutePath()));
+
+            } else {
+                log.info(String.format("Debugging is enabled, Temporary Directory (%s) wasn't erased.", submission.getTemporaryDirectory().getAbsolutePath()));
             }
-            
+
         }
 
         return submission;
     }
 
-    private void run(Submission submit, File problemDir, File langIntDirFile) throws NumberFormatException, IOException, InterruptedException, InvalidDataSetsFormatException {
+    private void run(Submission submit, File problemDir) throws NumberFormatException, IOException, InterruptedException, InvalidDataSetsFormatException {
 
         File[] inputs = problemDir.listFiles((FilenameFilter) inDataFilter);
 
-        validateLimits(String.valueOf(submit.getId()), submit.getLimits());
+        submit.setLimits(validateLimits(String.valueOf(submit.getId()), submit.getLimits()));
 
         validateInputs(inputs);
 
         Arrays.sort(inputs, dataSetFileComparator);
 
-        long totalUserTime = 0;
-
         RunnerContextBuilder runnerContextBuilder = context.getBean(RunnerContextBuilder.class);
-        runnerContextBuilder.setInstructionDirectory(langIntDirFile).setTemporaryDirectory(submit.getTemporaryDirectory());
+        runnerContextBuilder.setTemporaryDirectory(submit.getTemporaryDirectory());
 
         for (File input : inputs) {
             runnerContextBuilder.setInputFile(input);
             RunnerResult caseResult = runner.run(submit, runnerContextBuilder.build());
 
             submit.addRunnerResult(caseResult);
-
-            if (caseResult.getResult() == RunnerResult.Result.OK) {
-
-                totalUserTime += caseResult.getUserTime();
-
-                if (totalUserTime > submit.getLimits().getMaxTotalExecutionTime()) {
-                    submit.setVerdict(Verdicts.TLE);
-                    if (submit.isStopOnError()) {
-                        break;
-                    }
-                }
-            } else if (submit.isStopOnError()) {
-                submit.setVerdict(VerdictFactory.create(caseResult.getResult()));
+            if (!submit.isAllResults() && submit.getVerdict() != null) {
                 break;
             }
         }
     }
 
     private void evaluate(Submission submission, File problemDir) throws Exception {
-        if (submission.getVerdict() == null) {
+        if (submission.getVerdict() == null || submission.isAllResults()) {
+            log.info("Evaluation started");
+
             File[] prototypes = problemDir.listFiles((FilenameFilter) outDataFilter);
 
             Arrays.sort(prototypes, dataSetFileComparator);
@@ -148,24 +141,25 @@ public class Engine {
 
             prepareForEvaluation(submission, problemDir);
 
-            for (File prototype : prototypes) {
+            Iterator<RunnerResult> it = submission.getRunnerResults().iterator();
+            for (int i = 0; i < prototypes.length; ++i) {
+
+                if (it.next().getResult() != RunnerResult.Result.OK) {
+                    submission.addEvaluation((EvaluatorResult) null);
+                    continue;
+                }
+
+                File prototype = prototypes[i];
 
                 submission.setEvaluablePrototypeFilePath(prototype.getAbsolutePath());
 
-                //TODO: @Lan-Esto hay que arreglarlo, no me gusta construir la dirección de esta manera
-                if (!submission.getLanguage().getName().equals("Text")){
-                    submission.setEvaluableFilePath(submission.getTemporaryDirectory().getAbsolutePath() + "/" + prototype.getName());
-                }else{
-                    submission.setEvaluableFilePath(submission.getSourceFile().getAbsolutePath());
-                }
-                        
-                
+                submission.setEvaluableFilePath(submission.getTemporaryDirectory().getAbsolutePath() + "/" + prototype.getName());
 
                 submission.setInputFile(new File(FilenameUtils.removeExtension(prototype.getAbsolutePath()) + ".in"));
 
                 EvaluatorResult evaluate = evaluator.evaluate(submission);
                 submission.addEvaluation(evaluate);
-                if (submission.isStopOnError() && evaluate.getResult() != EvaluatorResult.Result.ACCEPTED) {
+                if (!submission.isAllResults() && submission.getVerdict() != null) {
                     break;
                 }
             }
@@ -188,34 +182,41 @@ public class Engine {
         }
     }
 
-    private File getLanguageInstructionsDirectory(Submission submission) throws IOException {
-        File langIntDirFile = FileUtils.forceMkdir(this.intructionsDirectory, submission.getLanguageName());
-        return langIntDirFile;
-    }
-
     private File getDatasetsDirectory(Submission submission) {
         return new File(this.properties.getProperty("problems.dir"), String.valueOf(submission.getProblemId()));
     }
 
     private void prepareForCompilation(Submission submission) throws IOException, InterruptedException {
         submission.setLanguage(languages.getLanguage(submission.getLanguageName()));
-        
+
         submission.setTemporaryDirectory(FileUtils.forceMkdir(temporaryDirectory, String.valueOf(submission.getId())));
 
         String fileName = String.format("%s.%s", Long.valueOf(submission.getId()), submission.getLanguage().getExtension());
         File sourceFile = new File(FileUtils.writeStringToFile(fileName, submission.getTemporaryDirectory(), submission.getSourceCode(), true));
         submission.setSourceFile(sourceFile);
-       
+
     }
 
-    private void validateLimits(String id, Limits limits) throws NumberFormatException {
-        //Memory limit must be below memory.limit configuration if set.
-        Long maxMemoryLimit = Long.valueOf(this.properties.getProperty("memory.limit"));
+    private Limits validateLimits(String id, Limits limits) throws NumberFormatException {
+        boolean isMaxMemoryInvalid = limits.getMaxMemory() == null || limits.getMaxMemory() > engineLimits.getMaxMemory();
+        boolean isMaxCaseExecutionTimeInvalid = limits.getMaxCaseExecutionTime() == null || limits.getMaxCaseExecutionTime() > engineLimits.getMaxCaseExecutionTime();
+        boolean isMaxTotalExecutionTimeInvalid = limits.getMaxTotalExecutionTime() == null || limits.getMaxTotalExecutionTime() > engineLimits.getMaxTotalExecutionTime();
+        boolean isMaxSourceCodeLenghtInvalid = limits.getMaxSourceCodeLenght() == null || limits.getMaxSourceCodeLenght() > engineLimits.getMaxSourceCodeLenght();
+        boolean isMaxOutputInvalid = limits.getMaxOutput() == null || limits.getMaxOutput() > engineLimits.getMaxOutput();
 
-        if (maxMemoryLimit != null && limits.getMaxMemory() > maxMemoryLimit) {
-            log.info(String.format("Running id %s: Memory limit adjusted from %s to %s, because of memory.limit configuration.", id, limits.getMaxMemory(), maxMemoryLimit));
-            limits.setMaxMemory(maxMemoryLimit);
+        if (isMaxMemoryInvalid || isMaxCaseExecutionTimeInvalid || isMaxTotalExecutionTimeInvalid || isMaxSourceCodeLenghtInvalid || isMaxOutputInvalid) {
+            long adjustedMaxMemory = isMaxMemoryInvalid ? engineLimits.getMaxMemory() : limits.getMaxMemory(),
+                    adjustedMaxCaseExecutionTime = isMaxCaseExecutionTimeInvalid ? engineLimits.getMaxCaseExecutionTime() : limits.getMaxCaseExecutionTime(),
+                    adjustedMaxTotalExecutionTime = isMaxTotalExecutionTimeInvalid ? engineLimits.getMaxTotalExecutionTime() : limits.getMaxTotalExecutionTime(),
+                    adjustedMaxSourceCodeLenght = isMaxSourceCodeLenghtInvalid ? engineLimits.getMaxSourceCodeLenght() : limits.getMaxSourceCodeLenght(),
+                    adjustedMaxOutput = isMaxOutputInvalid ? engineLimits.getMaxOutput() : limits.getMaxOutput();
+
+            Limits adjusted = LimitsFactory.create(limits.getClass().getSimpleName(), adjustedMaxMemory, adjustedMaxCaseExecutionTime, adjustedMaxTotalExecutionTime, adjustedMaxSourceCodeLenght, adjustedMaxOutput);
+
+            log.warn(String.format("Limit adjusted FROM %s TO %s, because of engine maximum limits configuration.", limits.toString(), adjusted.toString()));
+            return adjusted;
         }
+        return limits;
     }
 
     private boolean autoFix(Submission submission) throws IOException, InterruptedException {

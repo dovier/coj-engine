@@ -13,6 +13,10 @@ public class EvaluatorResult {
 
     private Result result;
 
+    public EvaluatorResult() {
+
+    }
+
     public EvaluatorResult(Result result) {
         this.result = result;
     }
@@ -33,6 +37,25 @@ public class EvaluatorResult {
 
     public enum Result {
 
-        ACCEPTED, WRONG_ANSWER, PRESENTATION_ERROR
+        AC {
+                    @Override
+                    public String associatedMessage() {
+                        return "Accepted";
+                    }
+                },
+        WA {
+                    @Override
+                    public String associatedMessage() {
+                        return "Wrong Answer";
+                    }
+                },
+        PE {
+                    @Override
+                    public String associatedMessage() {
+                        return "Presentation Error";
+                    }
+                };
+
+        public abstract String associatedMessage();
     }
 }

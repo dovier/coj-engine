@@ -6,6 +6,9 @@
 package cu.uci.uengine.model.dto;
 
 import cu.uci.uengine.Verdicts;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -13,14 +16,15 @@ import cu.uci.uengine.Verdicts;
  */
 public class VerdictDTO {
 
-    protected int submissionId;
+    protected int id;
 
-    //TODO: @Lan - esto vamos a dejarlo aquí porque el COJ lo necesita debido a que separa las submisiones de los contest y del 24h
-    protected Integer cid;
+    protected int problemId;
+
+    protected Map<String, Object> metadata;
 
     protected Verdicts verdict;
 
-    protected Long timeUsed;//Se refiere al userTime
+    protected Long timeUsed;
     protected Long cpuTimeUsed;
     protected Long memoryUsed;
 
@@ -35,20 +39,16 @@ public class VerdictDTO {
     protected Long maxTimeUsed;
     protected Long averageTimeUsed;
 
-    public int getSubmissionId() {
-        return submissionId;
+    protected Date evaluationDate;
+
+    private List<DatasetVerdictDTO> datasetVerdictDTO;
+
+    public int getId() {
+        return id;
     }
 
-    public void setSubmissionId(int submissionId) {
-        this.submissionId = submissionId;
-    }
-
-    public Integer getCid() {
-        return cid;
-    }
-
-    public void setCid(Integer cid) {
-        this.cid = cid;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Verdicts getVerdict() {
@@ -137,6 +137,62 @@ public class VerdictDTO {
 
     public void setAverageTimeUsed(Long averageTimeUsed) {
         this.averageTimeUsed = averageTimeUsed;
+    }
+
+    /**
+     * @return the metadata
+     */
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+    }
+
+    /**
+     * @return the evaluationDate
+     */
+    public Date getEvaluationDate() {
+        return evaluationDate;
+    }
+
+    /**
+     * @param evaluationDate the evaluationDate to set
+     */
+    public void setEvaluationDate(Date evaluationDate) {
+        this.evaluationDate = evaluationDate;
+    }
+
+    /**
+     * @return the problemId
+     */
+    public int getProblemId() {
+        return problemId;
+    }
+
+    /**
+     * @param problemId the problemId to set
+     */
+    public void setProblemId(int problemId) {
+        this.problemId = problemId;
+    }
+
+    /**
+     * @return the datasetVerdictDTO
+     */
+    public List<DatasetVerdictDTO> getDatasetVerdictDTO() {
+        return datasetVerdictDTO;
+    }
+
+    /**
+     * @param datasetVerdictDTO the datasetVerdictDTO to set
+     */
+    public void setDatasetVerdictDTO(List<DatasetVerdictDTO> datasetVerdictDTO) {
+        this.datasetVerdictDTO = datasetVerdictDTO;
     }
 
 }

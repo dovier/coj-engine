@@ -17,9 +17,7 @@ public interface Limits {
 
     public Long getMaxTotalExecutionTime();
 
-    public Long getMaxOutput();
-
+    public Long getMaxSourceCodeLenght();
     
-    //TODO: Esto no tiene por qué ser, debería quitarse y buscar otra estrategia donde se necesita.
-    public void setMaxMemory(Long maxMemory);
+    public Long getMaxOutput();
 }

@@ -1,6 +1,7 @@
 package cu.uci.uengine.config;
 
 import cu.uci.uengine.amqp.SubmitsListener;
+import cu.uci.uengine.runner.Limits;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -58,16 +59,6 @@ public class Config implements AsyncConfigurer {
     }
 
     @Bean
-    @PostConstruct
-    public File intructionsDirectory() throws IOException {
-        // carpeta para almacenar las interrupciones de los codigos. Esto se
-        // debe eliminar o comentar luego de la migracion
-        File intructionsDirectory = new File(System.getProperty("user.dir"), "int");
-        FileUtils.forceMkdir(intructionsDirectory);
-        return intructionsDirectory;
-    }
-
-    @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize(4);
@@ -89,8 +80,6 @@ public class Config implements AsyncConfigurer {
                 .getSystemResourceAsStream("uengine.properties"));
         return properties;
     }
-    
-
 
     @Override
     public Executor getAsyncExecutor() {
@@ -107,6 +96,38 @@ public class Config implements AsyncConfigurer {
         bean.setPassword(properties.getProperty("rabbit.password"));
 
         return bean;
+    }
+
+    @Bean
+    public Limits engineLimits() throws IOException {
+        final Properties properties = properties();
+
+        return new Limits() {
+            @Override
+            public Long getMaxMemory() {
+                return Long.valueOf(properties.getProperty("limit.max_memory"));
+            }
+
+            @Override
+            public Long getMaxCaseExecutionTime() {
+                return Long.valueOf(properties.getProperty("limit.max_case_execution_time"));
+            }
+
+            @Override
+            public Long getMaxTotalExecutionTime() {
+                return Long.valueOf(properties.getProperty("limit.max_total_execution_time"));
+            }
+
+            @Override
+            public Long getMaxSourceCodeLenght() {
+                return Long.valueOf(properties.getProperty("limit.max_source_code_lenght"));
+            }
+
+            @Override
+            public Long getMaxOutput() {
+                return Long.valueOf(properties.getProperty("limit.max_output"));
+            }
+        };
     }
 
     @Bean

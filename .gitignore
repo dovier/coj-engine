@@ -4,3 +4,6 @@
 /.settings/
 /.classpath
 /.project
+/sandboxScript/gen-int/*
+/nbactions-engine-debuguer.xml
+/nbactions.xml

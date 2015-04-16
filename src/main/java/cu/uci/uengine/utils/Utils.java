@@ -1,20 +1,18 @@
 package cu.uci.uengine.utils;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 import cu.uci.uengine.model.Submission;
 import java.io.InputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Component
 public class Utils {
+
+    static Log log = LogFactory.getLog(Utils.class.getName());
 
     public static boolean fixJavaName(Submission submission) throws IOException,
             InterruptedException {
@@ -40,6 +38,7 @@ public class Utils {
             submission.setErrorMessage(null);
             submission.setExecutablePath(null);
             
+            log.info("Java file name fixed.");
             return true;
         }
 

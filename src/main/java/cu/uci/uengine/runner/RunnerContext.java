@@ -15,6 +15,4 @@ import java.io.File;
 public interface RunnerContext extends TemporaryDirectoryAware{
 
     public File getInputFile();
-    
-    public File getInstructionDirectory();
 }

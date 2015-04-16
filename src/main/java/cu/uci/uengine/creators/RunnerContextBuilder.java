@@ -21,13 +21,11 @@ public class RunnerContextBuilder {
 
     private File inputFile;
 
-    private File instructionDirectory;
-
     private File temporaryDirectory;
 
     /**
      * @param inputFile the inputFile to set
-     * @return 
+     * @return
      */
     public RunnerContextBuilder setInputFile(File inputFile) {
         this.inputFile = inputFile;
@@ -35,25 +33,16 @@ public class RunnerContextBuilder {
     }
 
     /**
-     * @param instructionDirectory the instructionDirectory to set
-     * @return 
-     */
-    public RunnerContextBuilder setInstructionDirectory(File instructionDirectory) {
-        this.instructionDirectory = instructionDirectory;
-        return this;
-    }
-
-    /**
      * @param temporaryDirectory the temporaryDirectory to set
-     * @return 
+     * @return
      */
     public RunnerContextBuilder setTemporaryDirectory(File temporaryDirectory) {
         this.temporaryDirectory = temporaryDirectory;
         return this;
     }
-    
-    public RunnerContext build(){
-        return new RunnerContextImpl(inputFile, instructionDirectory, temporaryDirectory);
+
+    public RunnerContext build() {
+        return new RunnerContextImpl(inputFile, temporaryDirectory);
     }
 
 }

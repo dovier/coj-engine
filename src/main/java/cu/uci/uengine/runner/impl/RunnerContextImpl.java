@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cu.uci.uengine.runner.impl;
 
 import cu.uci.uengine.runner.RunnerContext;
@@ -13,21 +12,17 @@ import java.io.File;
  *
  * @author lan
  */
-
-public class RunnerContextImpl implements RunnerContext{
+public class RunnerContextImpl implements RunnerContext {
 
     private File inputFile;
-    
-    private File instructionDirectory;
-    
+
     private File temporaryDirectory;
 
-    public RunnerContextImpl(File inputFile,File instructionDirectory,File temporaryDirectory ){
+    public RunnerContextImpl(File inputFile, File temporaryDirectory) {
         this.inputFile = inputFile;
-        this.instructionDirectory = instructionDirectory;
         this.temporaryDirectory = temporaryDirectory;
     }
-    
+
     /**
      * @return the inputFile
      */
@@ -44,21 +39,6 @@ public class RunnerContextImpl implements RunnerContext{
     }
 
     /**
-     * @return the instructionDirectory
-     */
-    @Override
-    public File getInstructionDirectory() {
-        return instructionDirectory;
-    }
-
-    /**
-     * @param instructionDirectory the instructionDirectory to set
-     */
-    public void setInstructionDirectory(File instructionDirectory) {
-        this.instructionDirectory = instructionDirectory;
-    }
-
-    /**
      * @return the temporaryDirectory
      */
     @Override
@@ -72,6 +52,5 @@ public class RunnerContextImpl implements RunnerContext{
     public void setTemporaryDirectory(File temporaryDirectory) {
         this.temporaryDirectory = temporaryDirectory;
     }
-    
-   
+
 }

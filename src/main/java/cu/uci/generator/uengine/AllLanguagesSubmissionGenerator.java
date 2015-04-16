@@ -39,7 +39,7 @@ public class AllLanguagesSubmissionGenerator {
         boolean[] test = {false,//C
             false,//Ruby
             false,//Pascal
-            false,//C++
+            true,//C++
             false,//Java
             false,//C#
             false,//Bash
@@ -48,8 +48,7 @@ public class AllLanguagesSubmissionGenerator {
             false,//PHP
             false,//Python
             false,//Prolog
-            true,//JavaScript-Rhino
-            true,};//JavaScript-NodeJSs
+            false,};//JavaScript-NodeJSs
 
         String[] languages = {"C",
             "Ruby",
@@ -63,7 +62,6 @@ public class AllLanguagesSubmissionGenerator {
             "PHP",
             "Python",
             "Prolog",
-            "JavaScript-Rhino",
             "JavaScript-NodeJS"};
         
 
@@ -79,7 +77,6 @@ public class AllLanguagesSubmissionGenerator {
             7,//PHP
             4,//Python
             4,//Prolog
-            5,//JavaScript-Rhino
             4};//JavaScript-NodeJS
 
         
@@ -95,7 +92,6 @@ public class AllLanguagesSubmissionGenerator {
             "<?php\r\n$stdin = fopen('php://stdin', 'r');\r\n$input = fgets($stdin, 10);\r\nlist($a,$b) = split(\" \",$input);\r\necho $a + $b,\"\\n\";\r\nfclose($stdin);\r\n?>",
             "import string\r\nvalues = raw_input()\r\ntry:\r\n    while values:\r\n        values = string.split(values,\" \")\r\n        print int(values[0])+int(values[1])\r\n        values = raw_input()\r\nexcept EOFError:\r\n    exit",
             "program:-read_number(A),read_number(B),C is A+B,write(C).",
-            "importPackage(java.io);importPackage(java.lang);var reader = new BufferedReader( new InputStreamReader(System['in']) );var numbers = reader.readLine().split(' ');var a = numbers[0];var b = numbers[1];var c = parseInt(a)+parseInt(b);System.out.println((Integer)(c));",
             "process.stdin.resume();process.stdin.setEncoding('utf8');process.stdin.on('data', function (chunk) {var numbers = chunk.toString().split(' ');var a = parseInt(numbers.pop());var b = parseInt(numbers.pop());var c = a+b;process.stdout.write(c.toString());    process.exit();    });"
         };
 

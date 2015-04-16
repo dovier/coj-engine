@@ -77,15 +77,14 @@ public class FileRunner implements Runner {
 
         String command = buildCommand(runnable.getLanguageName(), runnable.getRunnableFile().getAbsolutePath(), runnerContext.getTemporaryDirectory().getAbsolutePath());
 
-        log.info("Running dataset " + runnerContext.getInputFile().getName());
+        log.debug("Running dataset " + runnerContext.getInputFile().getName());
 
         String name = FilenameUtils.getBaseName(runnerContext.getInputFile().getName());
 
         File outFile = new File(runnerContext.getTemporaryDirectory(), name + ".out");
         File errFile = new File(runnerContext.getTemporaryDirectory(), name + ".err");
-        File intFile = new File(runnerContext.getInstructionDirectory(), String.valueOf(runnable.getId()));
 
-        ProcessBuilder pb = buildProcessBuilder(runnable.getLimits(), runnable.getLanguageName(), runnerContext.getInputFile().getAbsolutePath(), outFile, errFile, intFile, command, String.valueOf(runnable.getId()));
+        ProcessBuilder pb = buildProcessBuilder(runnable.getLimits(), runnable.getLanguageName(), runnerContext.getInputFile().getAbsolutePath(), outFile, errFile, command, String.valueOf(runnable.getId()),runnable.isTrusted());
 
         Process process = pb.start();
 
@@ -133,17 +132,14 @@ public class FileRunner implements Runner {
                 break;
         }
 
-        boolean exceedOutputLimit = (runnable.getLimits().getMaxOutput() == null) ? false : outFile.length() > runnable.getLimits().getMaxOutput();
-        boolean exceedMaxOutputLimit = outFile.length() > Long.valueOf(properties.getProperty("output.limit"));
-
-        if (exceedOutputLimit || exceedMaxOutputLimit) {
+        if (outFile.length() > runnable.getLimits().getMaxOutput()) {
             result = new RunnerResult(RunnerResult.Result.OL);
         }
 
         return result;
     }
 
-    private ProcessBuilder buildProcessBuilder(Limits limits, String language, String inputPath, File outFile, File errFile, File intFile, String command, String id) {
+    private ProcessBuilder buildProcessBuilder(Limits limits, String language, String inputPath, File outFile, File errFile, String command, String id, boolean trusted) {
         List<String> uengineArgs = new ArrayList<>();
         uengineArgs.add(properties.getProperty("python.path"));
         uengineArgs.add(properties.getProperty("uengine.script"));
@@ -153,7 +149,7 @@ public class FileRunner implements Runner {
         uengineArgs.add("--language");
         uengineArgs.add(language);
         uengineArgs.add("--input");
-        uengineArgs.add(inputPath);        
+        uengineArgs.add(inputPath);
         uengineArgs.add("--output");
         uengineArgs.add(outFile.getAbsolutePath());
         uengineArgs.add("--errors");
@@ -162,12 +158,18 @@ public class FileRunner implements Runner {
         uengineArgs.add(String.valueOf(limits.getMaxCaseExecutionTime()));
         uengineArgs.add("--memory-limit");
         uengineArgs.add(String.valueOf(limits.getMaxMemory()));
-        uengineArgs.add("--gen-int");
+
+        if (trusted)
+            uengineArgs.add("--trusted");
+        
         uengineArgs.add("--program");
         uengineArgs.addAll(Arrays.asList(command.split(" ")));
-        
+
         String[] uengineArgsArray = uengineArgs.toArray(new String[0]);
-        log.info(Arrays.toString(uengineArgsArray));
+
+        if (log.isTraceEnabled()) {
+            log.trace(Arrays.toString(uengineArgsArray));
+        }
 
         return new ProcessBuilder(uengineArgsArray);
     }

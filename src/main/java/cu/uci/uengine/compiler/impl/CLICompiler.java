@@ -69,7 +69,9 @@ public class CLICompiler implements Compiler {
     @Override
     public boolean compile(Compilable compilable) throws CompilerException,
             CompilationException, UnsupportedLanguageException, IOException, InterruptedException {
-
+        
+        log.info("Compilation started");
+        
         checkCompilable(compilable);
 
         ProcessBuilder processBuilder = getProcessBuilder(compilable.getLanguageName(),

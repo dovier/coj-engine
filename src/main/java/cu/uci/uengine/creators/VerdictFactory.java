@@ -17,11 +17,11 @@ public class VerdictFactory {
 
     public static Verdicts create(EvaluatorResult.Result evaluatorResult) {
         switch (evaluatorResult) {
-            case ACCEPTED:
+            case AC:
                 return Verdicts.AC;
-            case WRONG_ANSWER:
+            case WA:
                 return Verdicts.WA;
-            case PRESENTATION_ERROR:
+            case PE:
                 return Verdicts.PE;
             default:
                 throw new AssertionError(evaluatorResult.name());

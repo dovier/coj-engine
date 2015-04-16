@@ -17,6 +17,7 @@ import cu.uci.uengine.runner.RunnerResult;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
 
     protected int problemId;
 
-    protected Integer contestId;
+    protected Map<String, Object> metadata;
 
     //Limits
     protected Long memoryLimit;
@@ -37,6 +38,8 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     protected Long timeLimit;
 
     protected Long caseTimeLimit;
+
+    protected Long sourceCodeLenghtLimit;
 
     protected Long outputLimit;
 
@@ -50,13 +53,14 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
 
     protected String sourceCode;
 
-    private Boolean isStopOnError;
+    protected boolean allResults;
 
-    private Boolean trusted;
-    
+    protected boolean trusted;
+
     //End Input
-    protected List<EvaluatorResult> evaluatorResults;
-    protected List<RunnerResult> runnerResults;
+    private final List<EvaluatorResult> evaluatorResults;
+
+    private final List<RunnerResult> runnerResults;
 
     protected Verdicts verdict;
 
@@ -92,7 +96,7 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     public Submission() {
         evaluatorResults = new ArrayList(20);
         runnerResults = new ArrayList(20);
-        isStopOnError = true;
+        allResults = false;
         acceptedDatasets = 0;
     }
 
@@ -280,17 +284,17 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     }
 
     /**
-     * @return the isStopOnError
+     * @return the isAllResults
      */
-    public Boolean isStopOnError() {
-        return isStopOnError;
+    public boolean isAllResults() {
+        return allResults;
     }
 
     /**
-     * @param isStopOnError the isStopOnError to set
+     * @param allResults the allResults to set
      */
-    public void setStopOnError(Boolean isStopOnError) {
-        this.isStopOnError = isStopOnError;
+    public void setAllResults(boolean allResults) {
+        this.allResults = allResults;
     }
 
     public void addRunnerResult(RunnerResult... runnerResultsList) {
@@ -313,8 +317,15 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
             }
 
             if (runnerResult.getResult() != RunnerResult.Result.OK && firstRunnerFailedDataset == null) {
-                firstRunnerFailedDataset = runnerResults.size() - 1;
+                firstRunnerFailedDataset = getRunnerResults().size() - 1;
             }
+
+            if (timeUsed != null && timeUsed > limits.getMaxTotalExecutionTime()) {
+                setVerdict(Verdicts.TLE);
+            } else if (runnerResult.getResult() != RunnerResult.Result.OK) {
+                setVerdict(VerdictFactory.create(runnerResult.getResult()));
+            }
+
         }
 
     }
@@ -322,15 +333,17 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     public void addEvaluation(EvaluatorResult... evaluatorResultList) {
 
         for (EvaluatorResult evaluatorResult : evaluatorResultList) {
-            evaluatorResults.add(evaluatorResult);
-
+            getEvaluatorResults().add(evaluatorResult);
+            if (evaluatorResult == null) {
+                continue;
+            }
             if (verdict == null || verdict == Verdicts.AC) {
                 verdict = VerdictFactory.create(evaluatorResult.getResult());
             }
-            if (evaluatorResult.getResult() == EvaluatorResult.Result.ACCEPTED) {
+            if (evaluatorResult.getResult() == EvaluatorResult.Result.AC) {
                 ++acceptedDatasets;
             } else if (firstEvaluationFailedDataset == null) {
-                firstEvaluationFailedDataset = evaluatorResults.size() - 1;
+                firstEvaluationFailedDataset = getEvaluatorResults().size() - 1;
             }
         }
     }
@@ -369,7 +382,7 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     }
 
     public int getProcessedDatasets() {
-        return runnerResults.size();
+        return getEvaluatorResults().size();
 
     }
 
@@ -399,8 +412,8 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
         return getTimeUsed() / (long) getProcessedDatasets();
     }
 
-    public Integer getContestId() {
-        return contestId;
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -443,15 +456,44 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
     /**
      * @return the isTrusted
      */
-    public Boolean isTrusted() {
+    @Override
+    public boolean isTrusted() {
         return trusted;
     }
 
     /**
      * @param trusted the isTrusted to set
      */
-    public void setTrusted(Boolean trusted) {
+    public void setTrusted(boolean trusted) {
         this.trusted = trusted;
+    }
+
+    /**
+     * @return the evaluatorResults
+     */
+    public List<EvaluatorResult> getEvaluatorResults() {
+        return evaluatorResults;
+    }
+
+    /**
+     * @return the runnerResults
+     */
+    public List<RunnerResult> getRunnerResults() {
+        return runnerResults;
+    }
+
+    /**
+     * @return the sourceCodeLenghtLimit
+     */
+    public Long getSourceCodeLenghtLimit() {
+        return sourceCodeLenghtLimit;
+    }
+
+    /**
+     * @param sourceCodeLenghtLimit the sourceCodeLenghtLimit to set
+     */
+    public void setSourceCodeLenghtLimit(Long sourceCodeLenghtLimit) {
+        this.sourceCodeLenghtLimit = sourceCodeLenghtLimit;
     }
 
 }

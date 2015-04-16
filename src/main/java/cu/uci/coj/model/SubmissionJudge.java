@@ -6,6 +6,8 @@ import java.util.Date;
 
 import cu.uci.uengine.Language;
 import cu.uci.uengine.Verdicts;
+import cu.uci.uengine.evaluator.EvaluatorResult;
+import java.util.List;
 
 public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable {
 
@@ -44,6 +46,8 @@ public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable
 	private File tmpDirSid;
 	private File execFile;
 	private File sourceFile;
+        
+        private List<EvaluatorResult> evaluatorResults;
 	
 	private boolean accepted;
 
@@ -342,5 +346,19 @@ public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable
 		// en 24h
 		return (this.cid != 0 ? 1 : 0) - (other.cid != 0 ? 1 : 0);
 	}
+
+    /**
+     * @return the evaluatorResults
+     */
+    public List<EvaluatorResult> getEvaluatorResults() {
+        return evaluatorResults;
+    }
+
+    /**
+     * @param evaluatorResults the evaluatorResults to set
+     */
+    public void setEvaluatorResults(List<EvaluatorResult> evaluatorResults) {
+        this.evaluatorResults = evaluatorResults;
+    }
 
 }

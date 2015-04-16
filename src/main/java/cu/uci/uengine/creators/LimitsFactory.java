@@ -22,4 +22,13 @@ public class LimitsFactory {
                 throw new NoClassDefFoundError("The is no Limits of type: " + type);
         }
     }
+
+    public static Limits create(String type, Long maxMemory, Long maxCaseExecutionTime, Long maxTotalExecutionTime, Long maxSourceCodeLenght, Long maxOutput) {
+        switch (type) {
+            case "BasicLimits":
+                return new BasicLimits(maxMemory, maxCaseExecutionTime, maxTotalExecutionTime, maxSourceCodeLenght, maxOutput);
+            default:
+                throw new NoClassDefFoundError("The is no Limits of type: " + type);
+        }
+    }
 }

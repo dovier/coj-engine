@@ -7,6 +7,7 @@ package cu.uci.uengine.adapters;
 
 import cu.uci.coj.model.SubmissionJudge;
 import cu.uci.uengine.model.Submission;
+import java.util.HashMap;
 
 /**
  *
@@ -17,12 +18,14 @@ public class SubmissionJudgeToSubmissionAdapter extends Submission {
     private final SubmissionJudge submissionJudge;
 
     public SubmissionJudgeToSubmissionAdapter(SubmissionJudge submissionJudge) {
+        super();
         this.submissionJudge = submissionJudge;
 
         this.id = submissionJudge.getSid();
         this.problemId = submissionJudge.getPid();
-        this.contestId = submissionJudge.getCid();
-        
+        this.metadata = new HashMap<>();
+        this.metadata.put("Cid", submissionJudge.getCid());
+
         this.memoryLimit = (long) submissionJudge.getMemoryLimit();
         this.timeLimit = (long) submissionJudge.getTimeLimit();
         this.caseTimeLimit = (long) submissionJudge.getCaseTimeLimit();
@@ -32,9 +35,10 @@ public class SubmissionJudgeToSubmissionAdapter extends Submission {
         this.sourceCode = submissionJudge.getSource();
         //TODO: @Lan-Hasta que venga el parámetro
         this.setTrusted(false);
+        setAllResults(true);
     }
-    
-    public SubmissionJudge getSubmissionJudge(){
+
+    public SubmissionJudge getSubmissionJudge() {
         return this.submissionJudge;
     }
 

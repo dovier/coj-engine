@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cu.uci.uengine.runner.impl;
+
+import cu.uci.uengine.runner.Limits;
 
 /**
  *
  * @author lan
  */
-public class BasicLimits implements cu.uci.uengine.runner.Limits{
-    
+public class BasicLimits implements Limits {
+
     private Long maxMemory;
-    
+
     private Long maxCaseExecutionTime;
-    
+
     private Long maxTotalExecutionTime;
-    
+
+    private Long maxSourceCodeLenght;
+
     private Long maxOutput;
 
     public BasicLimits(Long maxMemory, Long maxCaseExecutionTime, Long maxTotalExecutionTime, Long maxOutput) {
@@ -27,7 +30,11 @@ public class BasicLimits implements cu.uci.uengine.runner.Limits{
         this.maxOutput = maxOutput;
     }
 
-       
+    public BasicLimits(Long maxMemory, Long maxCaseExecutionTime, Long maxTotalExecutionTime, Long maxSourceCodeLenght, Long maxOutput) {
+        this(maxMemory, maxCaseExecutionTime, maxTotalExecutionTime, maxOutput);
+        this.maxSourceCodeLenght = maxSourceCodeLenght;
+    }
+
     /**
      * @return the maxMemory
      */
@@ -36,10 +43,6 @@ public class BasicLimits implements cu.uci.uengine.runner.Limits{
         return maxMemory;
     }
 
-    /**
-     * @param maxMemory the maxMemory to set
-     */
-    @Override
     public void setMaxMemory(Long maxMemory) {
         this.maxMemory = maxMemory;
     }
@@ -88,4 +91,25 @@ public class BasicLimits implements cu.uci.uengine.runner.Limits{
     public void setMaxOutput(Long maxOutput) {
         this.maxOutput = maxOutput;
     }
+
+    /**
+     * @return the maxSourceCodeLenght
+     */
+    @Override
+    public Long getMaxSourceCodeLenght() {
+        return maxSourceCodeLenght;
+    }
+
+    /**
+     * @param maxSourceCodeLenght the maxSourceCodeLenght to set
+     */
+    public void setMaxSourceCodeLenght(Long maxSourceCodeLenght) {
+        this.maxSourceCodeLenght = maxSourceCodeLenght;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("maxMemory: %s, maxCaseExecutionTime: %s, maxTotalExecutionTime: %s, maxSourceCodeLenght: %s, maxOutput: %s.", maxMemory, maxCaseExecutionTime, maxTotalExecutionTime, maxSourceCodeLenght, maxOutput);
+    }
+
 }
