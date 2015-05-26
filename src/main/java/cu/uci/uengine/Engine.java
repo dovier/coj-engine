@@ -159,7 +159,7 @@ public class Engine {
 
                 EvaluatorResult evaluate = evaluator.evaluate(submission);
                 submission.addEvaluation(evaluate);
-                if (!submission.isAllResults() && submission.getVerdict() != null) {
+                if (!submission.isAllResults() && evaluate.getResult() != EvaluatorResult.Result.AC) {
                     break;
                 }
             }

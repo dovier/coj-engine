@@ -409,7 +409,7 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
             return null;
         }
 
-        return getTimeUsed() / (long) getProcessedDatasets();
+        return getTimeUsed() / (long) getRunnerResults().size();
     }
 
     public Map<String, Object> getMetadata() {

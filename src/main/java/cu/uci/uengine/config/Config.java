@@ -50,7 +50,6 @@ public class Config implements AsyncConfigurer {
     }
 
     @Bean
-    @PostConstruct
     public File temporaryDirectory() throws IOException {
         // carpeta para el trabajo con los envios
         File temporaryDirectory = new File(System.getProperty("user.dir"), "tmp");

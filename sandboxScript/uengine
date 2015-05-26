@@ -49,7 +49,7 @@ def loadArgs(args):
     parser.add_argument('script', action = 'store')
     
     parser.add_argument('-id','--identifier', help='Program to be executed',required=True)
-    parser.add_argument('-l','--language',help='Language program was written with', required=True, choices=['Text','C++','Java','C','C#','Perl','Python','Pascal','Ruby','PHP','Bash','C++11','Haskell','Prolog','Assembly-Nasm','JavaScript-NodeJS'])
+    parser.add_argument('-l','--language',help='Language program was written with', required=True, choices=['Text','C++','Java','C','C#','Perl','Python','Pascal','Ruby','PHP','Bash','C++11','Haskell','Prolog','VBasic','JavaScript-NodeJS',])
     parser.add_argument('-i','--input', help='Input file',required=True,type=argparse.FileType('r'))
     parser.add_argument('-o','--output',help='Output file', required=True,type=argparse.FileType('w'))    
     parser.add_argument('-e','--errors',help='Errors file', required=True,type=argparse.FileType('w'))

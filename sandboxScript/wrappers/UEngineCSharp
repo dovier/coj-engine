@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/dmcs $1 && /usr/bin/mkbundle --static $2.exe -o $2

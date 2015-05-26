@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/vbnc $1 && /usr/bin/mkbundle --static $2.exe -o $2
