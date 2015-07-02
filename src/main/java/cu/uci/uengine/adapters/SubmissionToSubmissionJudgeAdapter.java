@@ -14,6 +14,7 @@ import java.util.Date;
  *
  * @author lan
  */
+@Deprecated
 public class SubmissionToSubmissionJudgeAdapter extends SubmissionJudge {
 
     public SubmissionToSubmissionJudgeAdapter(Submission submission) {

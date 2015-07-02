@@ -39,7 +39,7 @@ public class SubmissionDTO {
 
     private Boolean trusted;
 
-    SubmissionDTO() {
+    public SubmissionDTO() {
 
     }
 

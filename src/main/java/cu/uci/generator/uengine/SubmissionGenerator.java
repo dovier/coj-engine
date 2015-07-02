@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import cu.uci.coj.model.SubmissionJudge;
 import cu.uci.uengine.Verdicts;
+import cu.uci.uengine.model.dto.SubmissionDTO;
+import cu.uci.uengine.model.dto.VerdictDTO;
 
 
 @Component
@@ -79,9 +81,9 @@ public class SubmissionGenerator implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        SubmissionJudge result = (SubmissionJudge) jsonMessageConverter
+        VerdictDTO result = (VerdictDTO) jsonMessageConverter
                 .fromMessage(message);
-        if (result != null && result.getVerdict() == Verdicts.AC){
+        if (result != null && result.getVerdict()== Verdicts.AC){
             log.info(String.format("Accepted %s",countAccepted++));
         }
         

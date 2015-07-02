@@ -313,7 +313,7 @@ public class Submission implements Compilable, cu.uci.uengine.runner.Runnable, E
             }
 
             if (runnerResult.getMemory() != null) {
-                memoryUsed = (memoryUsed == null ? runnerResult.getMemory() : memoryUsed + runnerResult.getMemory());
+                memoryUsed = (memoryUsed == null ? runnerResult.getMemory() : Math.max(memoryUsed, runnerResult.getMemory()));
             }
 
             if (runnerResult.getResult() != RunnerResult.Result.OK && firstRunnerFailedDataset == null) {

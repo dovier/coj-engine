@@ -31,9 +31,8 @@ public class SubmissionDTOToSubmissionAdapter extends Submission {
         this.evaluationType = submissionDTO.getEvaluationType();
         this.languageName = submissionDTO.getLanguage();
         this.sourceCode = submissionDTO.getSourceCode();
-        this.trusted = submissionDTO.isTrusted();
-        this.allResults = submissionDTO.isAllResults();
-
+        this.trusted = submissionDTO.isTrusted()==null?false:submissionDTO.isTrusted();
+        this.allResults = submissionDTO.isAllResults()==null?false:submissionDTO.isAllResults();
     }
 
 }

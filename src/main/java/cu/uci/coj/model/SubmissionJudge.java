@@ -9,6 +9,12 @@ import cu.uci.uengine.Verdicts;
 import cu.uci.uengine.evaluator.EvaluatorResult;
 import java.util.List;
 
+/**
+ * 
+ * @author yunier
+ * @deprecated Ya esto no se usa, ya se hacen los envios con los DTOs se pueden borrar los adapters que utilizan esta clase y luego la clase en si.
+ */
+@Deprecated
 public class SubmissionJudge implements Comparable<SubmissionJudge>,Serializable {
 
 	/**

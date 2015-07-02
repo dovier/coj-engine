@@ -13,6 +13,7 @@ import java.util.HashMap;
  *
  * @author lan
  */
+@Deprecated
 public class SubmissionJudgeToSubmissionAdapter extends Submission {
 
     private final SubmissionJudge submissionJudge;
