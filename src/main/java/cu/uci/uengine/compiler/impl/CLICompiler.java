@@ -26,9 +26,9 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author lan Precondition: There have to be a file /languages.properties with
- a coma separated list of languages with key language.list and a key
- {lang}.compile with the compilation command. Example:
- C++.compile=/usr/bin/g++ -g -O2 -static-libstdc++ <SRC> -o <EXE>
+ * a coma separated list of languages with key language.list and a key
+ * {lang}.compile with the compilation command. Example:
+ * C++.compile=/usr/bin/g++ -g -O2 -static-libstdc++ <SRC> -o <EXE>
  */
 @Component
 public class CLICompiler implements Compiler {
@@ -38,6 +38,9 @@ public class CLICompiler implements Compiler {
 
     @Resource
     Languages languages;
+
+    @Resource
+    Properties properties;
 
     @PostConstruct
     private void loadLanguages() throws IOException {
@@ -79,8 +82,25 @@ public class CLICompiler implements Compiler {
                 getExecutableFilePath(compilable));
 
         try {
-            Process process = processBuilder.start();
+            final Process process = processBuilder.start();
+
+            //This is because of limit on Compiler Execution Time
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
             process.waitFor();
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            });
+
+            final long compilationTimeLimit = Long.valueOf(properties.getProperty("limit.compiler_time"));
+            thread.start();
+            thread.join(compilationTimeLimit);
+
+            try {
             if (process.exitValue() != 0) {
                 BufferedReader bis = new BufferedReader(
                         new InputStreamReader(new BufferedInputStream(
@@ -92,6 +112,10 @@ public class CLICompiler implements Compiler {
                 }
                 //TODO: @Lan - esto no debería ser una excepción, valorar abstraer también la salida del compilador y establecer esto como una compilación correcta pero qeu dio un resultado fallido.
                 throw new CompilationException(sb.toString());
+            }
+
+            } catch (IllegalThreadStateException illegalThreadStateException) {//Caused by process.exitValue() if the subprocess represented by this Process object has not yet terminated 
+                throw new CompilationException("Compilation Time Limit Exceeded");
             }
         } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
