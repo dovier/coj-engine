@@ -5,9 +5,11 @@
  */
 package cu.uci.uengine.adapters;
 
+import cu.uci.uengine.Verdicts;
 import cu.uci.uengine.model.Submission;
 import cu.uci.uengine.model.dto.DatasetVerdictDTO;
 import cu.uci.uengine.model.dto.VerdictDTO;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,11 +40,27 @@ public class SubmissionToVerdictDTOAdapter extends VerdictDTO {
             List<DatasetVerdictDTO> datasetVerdictDTOs = getDatasetVerdicts(submission);
 
             setDatasetVerdictDTO(datasetVerdictDTOs);
+            
+            setVerdictAndFirstFailedDatasetFromAllResults(submission);
         }
         this.evaluationDate = new Date();
     }
 
-    private List<DatasetVerdictDTO> getDatasetVerdicts(Submission submission) {
+    private void setVerdictAndFirstFailedDatasetFromAllResults(Submission submission) {
+    	List<DatasetVerdictDTO> datasetVerdictDTOs = this.getDatasetVerdictDTO();
+    	
+    	int testnum = 0;
+    	for (DatasetVerdictDTO dv : datasetVerdictDTOs){
+    		if (dv.getVerdict() != null && dv.getVerdict() != Verdicts.AC){
+    			this.setVerdict(dv.getVerdict());
+    			this.setFirstFailedDataset(testnum);
+    			break;
+    		}
+    		testnum++;
+    	}
+	}
+
+	private List<DatasetVerdictDTO> getDatasetVerdicts(Submission submission) {
         List<DatasetVerdictDTO> datasetVerdictDTOs = new ArrayList<>();
         for (int i = 0; i < submission.getProcessedDatasets(); i++) {
             DatasetVerdictDTO datasetVerdictDTO = new RunnerAndEvaluatorResultsToDatasetVerdictMultiAdapter(submission.getRunnerResults().get(i), submission.getEvaluatorResults().get(i));
@@ -55,7 +73,10 @@ public class SubmissionToVerdictDTOAdapter extends VerdictDTO {
         if (submission.getFirstRunnerFailedDataset() != null && submission.getFirstEvaluationFailedDataset() != null) {
             return Math.min(submission.getFirstRunnerFailedDataset(), submission.getFirstEvaluationFailedDataset());
         } else {
-            return submission.getFirstRunnerFailedDataset() != null ? submission.getFirstRunnerFailedDataset() : submission.getFirstEvaluationFailedDataset();
+            Integer result = submission.getFirstRunnerFailedDataset() != null ? submission.getFirstRunnerFailedDataset() : submission.getFirstEvaluationFailedDataset();
+            if (result == null)
+            	result = -1;
+            return result;
         }
     }
 }
