@@ -111,7 +111,7 @@ public class FileRunner implements Runner {
 
         switch (resultCode) {
             case "OK":
-                result = new RunnerResult(RunnerResult.Result.OK, name, Long.valueOf(results[SandboxResults.USER_TIME]), Long.valueOf(results[SandboxResults.CPU_TIME]), Long.valueOf(results[SandboxResults.MEMORY]));
+                result = new RunnerResult(RunnerResult.Result.OK, name, Long.valueOf(results[SandboxResults.USER_TIME]), Long.valueOf(results[SandboxResults.CPU_TIME]), Long.valueOf(results[SandboxResults.MEMORY]) * 1024);
                 break;
             case "AT":
                 result = new RunnerResult(RunnerResult.Result.RT);
